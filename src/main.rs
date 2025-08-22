@@ -1,124 +1,81 @@
 mod map;
+mod render;
+mod utils;
 
+use crossterm::event::poll;
 use crossterm::{
-    cursor::{Hide, MoveTo, Show},
-    event::{Event, KeyCode, poll, read},
-    execute, queue,
-    style::Print,
-    terminal::{Clear, ClearType, disable_raw_mode, enable_raw_mode},
+    cursor::MoveTo,
+    event::{Event, KeyCode, read},
+    execute,
+    style::{Color, Print, ResetColor, SetForegroundColor},
+    terminal::{Clear, ClearType},
 };
 use std::io::{Write, stdout};
 use std::time::Duration;
-use crate::map::Map;
 
-fn main() -> std::io::Result<()> {
+fn main() {
+    let _terminal = render::Terminal::new();
+
     let mut stdout = stdout();
-    enable_raw_mode()?;
-    execute!(stdout, Hide, Clear(ClearType::All))?;
+    let mut player_pos = (5, 5);
+    let map_width = 20;
+    let map_height = 10;
 
-    let map: Map = Map::create_new(10, 10);
+    let map: Vec<Vec<char>> = vec![vec!['.'; map_width]; map_height];
 
-    let (mut x, mut y) = (5, 5);
+    loop {
+        // Clear screen
+        execute!(stdout, Clear(ClearType::All)).unwrap();
 
-    // Draw initial grid
-    for row in 0..map.height {
-        for col in 0..map.width {
-            queue!(stdout, MoveTo(col as u16, row as u16), Print("."))?;
-        }
-    }
-
-    // Draw initial player
-    queue!(stdout, MoveTo(map.height/2, map.width/2), Print("@"))?;
-    stdout.flush()?;
-
-    let mut num: i32 = 0;
-
-    'game: loop {
-        if poll(Duration::from_millis(100))? {
-
-            if let Event::Key(event) = read()? {
-                num+=1;
-                queue!(stdout, MoveTo(0, 0), Print(format!("This is something : {num}")));
+        // Draw map
+        for (y, row) in map.iter().enumerate() {
+            for (x, &tile) in row.iter().enumerate() {
+                execute!(stdout, MoveTo(x as u16, y as u16), Print(tile)).unwrap();
             }
+        }
 
-            continue 'game;
+        // Draw player
+        execute!(
+            stdout,
+            MoveTo(player_pos.0, player_pos.1),
+            SetForegroundColor(Color::Yellow),
+            Print("@"),
+            ResetColor
+        )
+        .unwrap();
 
-            if let Event::Key(event) = read()? {
-                // erase old player
-                queue!(stdout, MoveTo(x, y), Print("."))?;
+        stdout.flush().unwrap();
 
-                // handle movement
-                match event.code {
-                    // Cardinal directions
-                    KeyCode::Up | KeyCode::Char('8') => {
-                        if y > 0 {
-                            y -= 1
+        // Poll input with timeout to avoid blocking
+        if poll(Duration::from_millis(100)).unwrap() {
+            if let Event::Key(event) = read().unwrap() {
+                if event.kind.is_press() {
+                    match event.code {
+                        KeyCode::Up => {
+                            if player_pos.1 > 0 {
+                                player_pos.1 -= 1
+                            }
                         }
+                        KeyCode::Down => {
+                            if player_pos.1 < map_height as u16 - 1 {
+                                player_pos.1 += 1
+                            }
+                        }
+                        KeyCode::Left => {
+                            if player_pos.0 > 0 {
+                                player_pos.0 -= 1
+                            }
+                        }
+                        KeyCode::Right => {
+                            if player_pos.0 < map_width as u16 - 1 {
+                                player_pos.0 += 1
+                            }
+                        }
+                        KeyCode::Char('q') => break,
+                        _ => {}
                     }
-                    KeyCode::Down | KeyCode::Char('2') => {
-                        if y < map.height - 1 {
-                            y += 1
-                        }
-                    }
-                    KeyCode::Left | KeyCode::Char('4') => {
-                        if x > 0 {
-                            x -= 1
-                        }
-                    }
-                    KeyCode::Right | KeyCode::Char('6') => {
-                        if x < map.width - 1 {
-                            x += 1
-                        }
-                    }
-
-                    // Diagonals via keypad (NumLock on)
-                    KeyCode::Char('7') => {
-                        if x > 0 {
-                            x -= 1
-                        };
-                        if y > 0 {
-                            y -= 1
-                        }
-                    } // up-left
-                    KeyCode::Char('9') => {
-                        if x < map.width - 1 {
-                            x += 1
-                        };
-                        if y > 0 {
-                            y -= 1
-                        }
-                    } // up-right
-                    KeyCode::Char('1') => {
-                        if x > 0 {
-                            x -= 1
-                        };
-                        if y < map.height - 1 {
-                            y += 1
-                        }
-                    } // down-left
-                    KeyCode::Char('3') => {
-                        if x < map.width - 1 {
-                            x += 1
-                        };
-                        if y < map.height - 1 {
-                            y += 1
-                        }
-                    } // down-right
-                    KeyCode::Char('5') => { /* stay in place */ }
-
-                    KeyCode::Char('q') => break 'game,
-                    _ => {}
                 }
-
-                // draw new player
-                queue!(stdout, MoveTo(x, y), Print("@"))?;
-                stdout.flush()?;
             }
         }
     }
-
-    // restore terminal
-    execute!(stdout, Show)?;
-    disable_raw_mode()?;
-    Ok(())
 }
