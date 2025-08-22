@@ -12,23 +12,22 @@ use crossterm::{
 };
 use std::io::{Write, stdout};
 use std::time::Duration;
+use map::Map;
 
 fn main() {
     let _terminal = render::Terminal::new();
 
     let mut stdout = stdout();
     let mut player_pos = (5, 5);
-    let map_width = 20;
-    let map_height = 10;
 
-    let map: Vec<Vec<char>> = vec![vec!['.'; map_width]; map_height];
+    let map: Map = Map::create_new(10, 10);
 
     loop {
         // Clear screen
         execute!(stdout, Clear(ClearType::All)).unwrap();
 
         // Draw map
-        for (y, row) in map.iter().enumerate() {
+        for (y, row) in map.matrix.iter().enumerate() {
             for (x, &tile) in row.iter().enumerate() {
                 execute!(stdout, MoveTo(x as u16, y as u16), Print(tile)).unwrap();
             }
@@ -57,7 +56,7 @@ fn main() {
                             }
                         }
                         KeyCode::Down => {
-                            if player_pos.1 < map_height as u16 - 1 {
+                            if player_pos.1 < map.height as u16 - 1 {
                                 player_pos.1 += 1
                             }
                         }
@@ -67,7 +66,7 @@ fn main() {
                             }
                         }
                         KeyCode::Right => {
-                            if player_pos.0 < map_width as u16 - 1 {
+                            if player_pos.0 < map.width as u16 - 1 {
                                 player_pos.0 += 1
                             }
                         }
