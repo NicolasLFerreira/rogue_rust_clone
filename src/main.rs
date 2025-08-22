@@ -1,7 +1,9 @@
+mod input;
 mod map;
 mod render;
 mod utils;
 
+use crate::input::Action;
 use crate::map::Map;
 use crate::utils::Coord;
 use crossterm::event::poll;
@@ -23,7 +25,7 @@ fn main() {
 
     let map: Map = Map::create_new(10, 10);
 
-    loop {
+    'main:loop {
         // Clear screen
         render::Terminal::clear();
 
@@ -46,34 +48,35 @@ fn main() {
 
         stdout.flush().unwrap();
 
-        // Poll input with timeout to avoid blocking
-        if poll(Duration::from_millis(100)).unwrap() {
-            if let Event::Key(event) = read().unwrap() {
-                if event.kind.is_press() {
-                    match event.code {
-                        KeyCode::Up => {
-                            if player_pos.y > 0 {
-                                player_pos.y -= 1
-                            }
-                        }
-                        KeyCode::Down => {
-                            if player_pos.y < map.height as u16 - 1 {
-                                player_pos.y += 1
-                            }
-                        }
-                        KeyCode::Left => {
-                            if player_pos.x > 0 {
-                                player_pos.x -= 1
-                            }
-                        }
-                        KeyCode::Right => {
-                            if player_pos.x < map.width as u16 - 1 {
-                                player_pos.x += 1
-                            }
-                        }
-                        KeyCode::Char('q') => break,
-                        _ => {}
+        let actions = input::get_actions();
+
+        for action in actions {
+            match action {
+                Action::MoveUp => {
+                    if player_pos.y > 0 {
+                        player_pos.y -= 1
                     }
+                }
+                Action::MoveDown => {
+                    if player_pos.y < map.height as u16 - 1 {
+                        player_pos.y += 1
+                    }
+                }
+                Action::MoveLeft => {
+                    if player_pos.x > 0 {
+                        player_pos.x -= 1
+                    }
+                }
+                Action::MoveRight => {
+                    if player_pos.x < map.width as u16 - 1 {
+                        player_pos.x += 1
+                    }
+                }
+                Action::Quit => {
+                    break 'main;
+                }
+                Action::Wait => {
+                    continue;
                 }
             }
         }
