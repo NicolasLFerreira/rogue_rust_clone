@@ -3,53 +3,36 @@ mod map;
 mod render;
 mod utils;
 
-use crate::input::Action;
+use crate::input::{Action, get_actions};
 use crate::map::Map;
+use crate::render::Terminal;
 use crate::utils::Coord;
-use crossterm::event::poll;
 use crossterm::{
     cursor::MoveTo,
-    event::{Event, KeyCode, read},
-    execute, queue,
+    queue,
     style::{Color, Print, ResetColor, SetForegroundColor},
-    terminal::{Clear, ClearType},
 };
 use std::io::{Write, stdout};
-use std::time::Duration;
+use std::thread::sleep;
+use std::time::{Duration, Instant};
+
+const FPS: u64 = 10;
+const FRAME_DURATION: Duration = Duration::from_millis(1000 / FPS);
 
 fn main() {
-    let _terminal: render::Terminal = render::Terminal::new();
-
+    let _terminal: Terminal = Terminal::new();
     let mut stdout = stdout();
-    let mut player_pos: Coord = Coord::new(5, 5);
 
-    let map: Map = Map::create_new(10, 10);
+    let mut player_pos = Coord::new(5, 5);
+    let map = Map::create_new(10, 10);
 
-    'main:loop {
-        // Clear screen
-        render::Terminal::clear();
+    'game_loop: loop {
+        let frame_start = Instant::now();
 
-        // Draw map
-        for (y, row) in map.matrix.iter().enumerate() {
-            for (x, &tile) in row.iter().enumerate() {
-                queue!(stdout, MoveTo(x as u16, y as u16), Print(tile)).unwrap();
-            }
-        }
+        // --- INPUT ---
+        let actions = get_actions();
 
-        // Draw player
-        queue!(
-            stdout,
-            MoveTo(player_pos.x, player_pos.y),
-            SetForegroundColor(Color::Yellow),
-            Print("@"),
-            ResetColor
-        )
-        .unwrap();
-
-        stdout.flush().unwrap();
-
-        let actions = input::get_actions();
-
+        // --- UPDATE ---
         for action in actions {
             match action {
                 Action::MoveUp => {
@@ -72,13 +55,35 @@ fn main() {
                         player_pos.x += 1
                     }
                 }
-                Action::Quit => {
-                    break 'main;
-                }
-                Action::Wait => {
-                    continue;
-                }
+                Action::Quit => break 'game_loop,
+                Action::Wait => {}
             }
+        }
+
+        // --- RENDER ---
+        Terminal::clear();
+
+        for (y, row) in map.matrix.iter().enumerate() {
+            for (x, &tile) in row.iter().enumerate() {
+                queue!(stdout, MoveTo(x as u16, y as u16), Print(tile)).unwrap();
+            }
+        }
+
+        queue!(
+            stdout,
+            MoveTo(player_pos.x, player_pos.y),
+            SetForegroundColor(Color::Yellow),
+            Print("@"),
+            ResetColor
+        )
+        .unwrap();
+
+        stdout.flush().unwrap();
+
+        // --- FRAME LIMIT ---
+        let elapsed = frame_start.elapsed();
+        if elapsed < FRAME_DURATION {
+            sleep(FRAME_DURATION - elapsed);
         }
     }
 }
