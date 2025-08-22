@@ -1,3 +1,5 @@
+use crossterm::cursor::MoveTo;
+use crossterm::terminal::{Clear, ClearType, EnterAlternateScreen};
 use crossterm::{
     cursor::{Hide, Show},
     execute,
@@ -11,16 +13,12 @@ pub struct Terminal;
 impl Terminal {
     pub fn new() -> Self {
         enable_raw_mode().unwrap();
-        execute!(stdout(), Hide).unwrap();
+        execute!(stdout(), EnterAlternateScreen, Hide).unwrap();
         Terminal
     }
 
     pub fn clear() {
-        execute!(
-            stdout(),
-            crossterm::terminal::Clear(crossterm::terminal::ClearType::All)
-        )
-        .unwrap();
+        execute!(stdout(), Clear(ClearType::All), MoveTo(0, 0)).unwrap();
     }
 }
 
