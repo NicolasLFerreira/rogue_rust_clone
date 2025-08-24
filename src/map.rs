@@ -1,27 +1,60 @@
-pub struct Map {
-    pub height: u16,
-    pub width: u16,
-    pub matrix: Vec<Vec<char>>,
+// X -> Column -> Width
+// Y -> Row -> Height
+
+pub struct TileMap {
+    pub width: usize,  // X, Column
+    pub height: usize, // Y, Row
+    internal_map: Vec<Tile>,
 }
 
-impl Map {
-    pub fn create_new(width: u16, height: u16) -> Self {
-        let mut temp_matrix: Vec<Vec<char>> = Vec::new();
-
-        for i in 0..height {
-            let mut temp_row: Vec<char> = Vec::new();
-
-            for j in 0..width {
-                temp_row.push('.');
-            }
-
-            temp_matrix.push(temp_row);
-        }
-
-        Map {
-            height,
+impl TileMap {
+    // Basic map generation
+    pub fn create_new(width: usize, height: usize) -> Self {
+        TileMap {
             width,
-            matrix: temp_matrix,
+            height,
+            internal_map: vec![Tile { icon: '.' }; width * height],
         }
+    }
+
+    fn in_bound(&self, x: usize, y: usize) -> bool {
+        x < self.width && y < self.height
+    }
+
+    fn index(&self, x: usize, y: usize) -> Option<usize> {
+        self.in_bound(x, y).then(|| x * self.width + y)
+    }
+
+    pub fn get(&self, x: usize, y: usize) -> Option<&Tile> {
+        match self.index(x, y) {
+            Some(index) => Some(&self.internal_map[index]),
+            None => None,
+        }
+    }
+
+    pub fn set(&mut self, x: usize, y: usize, tile: Tile) -> bool {
+        match self.index(x, y) {
+            Some(index) => {
+                self.internal_map[index] = tile;
+                true
+            }
+            None => false,
+        }
+    }
+}
+
+#[derive(Clone, Copy)]
+pub struct Tile {
+    pub icon: char,
+}
+
+pub struct Coord {
+    pub x: usize,
+    pub y: usize,
+}
+
+impl Coord {
+    pub fn new(x: usize, y: usize) -> Coord {
+        Coord { x, y }
     }
 }

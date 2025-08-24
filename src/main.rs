@@ -4,9 +4,8 @@ mod render;
 mod utils;
 
 use crate::input::{Action, get_actions};
-use crate::map::Map;
+use crate::map::{Coord, TileMap};
 use crate::render::Terminal;
-use crate::utils::Coord;
 use crossterm::{
     cursor::MoveTo,
     queue,
@@ -24,7 +23,7 @@ fn main() {
     let mut stdout = stdout();
 
     let mut player_pos = Coord::new(5, 5);
-    let map = Map::create_new(10, 10);
+    let map = TileMap::create_new(10, 10);
 
     'game_loop: loop {
         let frame_start = Instant::now();
@@ -51,7 +50,7 @@ fn main() {
                     }
                 }
                 Action::MoveRight => {
-                    if player_pos.x < map.width as u16 - 1 {
+                    if player_pos.x < map.width - 1 {
                         player_pos.x += 1
                     }
                 }
@@ -65,7 +64,7 @@ fn main() {
 
         for (y, row) in map.matrix.iter().enumerate() {
             for (x, &tile) in row.iter().enumerate() {
-                queue!(stdout, MoveTo(x as u16, y as u16), Print(tile)).unwrap();
+                queue!(stdout, MoveTo(x, y), Print(tile)).unwrap();
             }
         }
 
