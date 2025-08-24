@@ -1,6 +1,8 @@
 // X -> Column -> Width
 // Y -> Row -> Height
 
+use std::fmt::{Display, Formatter};
+
 pub struct TileMap {
     pub width: usize,  // X, Column
     pub height: usize, // Y, Row
@@ -21,8 +23,9 @@ impl TileMap {
         x < self.width && y < self.height
     }
 
+    // row major
     fn index(&self, x: usize, y: usize) -> Option<usize> {
-        self.in_bound(x, y).then(|| x * self.width + y)
+        self.in_bound(x, y).then(|| y * self.width + x)
     }
 
     pub fn get(&self, x: usize, y: usize) -> Option<&Tile> {
@@ -46,6 +49,12 @@ impl TileMap {
 #[derive(Clone, Copy)]
 pub struct Tile {
     pub icon: char,
+}
+
+impl Display for Tile {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.icon)
+    }
 }
 
 pub struct Coord {

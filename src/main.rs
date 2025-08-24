@@ -40,7 +40,7 @@ fn main() {
                     }
                 }
                 Action::MoveDown => {
-                    if player_pos.y < map.height as u16 - 1 {
+                    if player_pos.y < map.height - 1 {
                         player_pos.y += 1
                     }
                 }
@@ -62,15 +62,15 @@ fn main() {
         // --- RENDER ---
         Terminal::clear();
 
-        for (y, row) in map.matrix.iter().enumerate() {
-            for (x, &tile) in row.iter().enumerate() {
-                queue!(stdout, MoveTo(x, y), Print(tile)).unwrap();
+        for x in 0..map.width {
+            for y in 0..map.height {
+                queue!(stdout, MoveTo(x as u16, y as u16), Print(map.get(y, x).unwrap())).unwrap();
             }
         }
 
         queue!(
             stdout,
-            MoveTo(player_pos.x, player_pos.y),
+            MoveTo(player_pos.x as u16, player_pos.y as u16),
             SetForegroundColor(Color::Yellow),
             Print("@"),
             ResetColor
