@@ -13,7 +13,7 @@ pub struct Level {
 }
 
 impl Level {
-    pub fn create_new(width: usize, height: usize, sections: u8) {
+    pub fn create_new(width: usize, height: usize, sections: u8) -> Level {
         let mut rooms: Vec<Room> = (0..sections * sections)
             .map(|i| {
                 Room::create_new(
@@ -28,13 +28,13 @@ impl Level {
             connections: rooms.iter().map(|a| a.id).collect(),
         };
 
-        let level: Level = Level {
+        Level {
             width,
             height,
             sections,
             rooms,
             corridors: vec![corridor],
-        };
+        }
     }
 }
 
@@ -72,10 +72,7 @@ impl Room {
     }
 
     pub fn get(&self, x: usize, y: usize) -> Option<&Tile> {
-        match self.index(x, y) {
-            Some(index) => Some(&self.internal_map[index]),
-            None => None,
-        }
+        self.index(x, y).map(|i| &self.internal_map[i])
     }
 
     pub fn set(&mut self, x: usize, y: usize, tile: Tile) -> bool {
