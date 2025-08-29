@@ -3,16 +3,59 @@
 
 use std::fmt::{Display, Formatter};
 
-pub struct TileMap {
+// The map structure covering the whole screen
+pub struct Level {
+    pub width: usize,
+    pub height: usize,
+    pub sections: u8,
+    rooms: Vec<Room>,
+    corridors: Vec<Corridor>,
+}
+
+impl Level {
+    pub fn create_new(width: usize, height: usize, sections: u8) {
+        let mut rooms: Vec<Room> = (0..sections * sections)
+            .map(|i| {
+                Room::create_new(
+                    RoomId(i as usize),
+                    width / sections as usize,
+                    height / sections as usize,
+                )
+            })
+            .collect();
+
+        let corridor = Corridor {
+            connections: rooms.iter().map(|a| a.id).collect(),
+        };
+
+        let level: Level = Level {
+            width,
+            height,
+            sections,
+            rooms,
+            corridors: vec![corridor],
+        };
+    }
+}
+
+// Walkable map connecting rooms
+pub struct Corridor {
+    pub connections: Vec<RoomId>,
+}
+
+// Playable area
+pub struct Room {
+    pub id: RoomId,
     pub width: usize,  // X, Column
     pub height: usize, // Y, Row
     internal_map: Vec<Tile>,
 }
 
-impl TileMap {
+impl Room {
     // Basic map generation
-    pub fn create_new(width: usize, height: usize) -> Self {
-        TileMap {
+    pub fn create_new(id: RoomId, width: usize, height: usize) -> Self {
+        Room {
+            id,
             width,
             height,
             internal_map: vec![Tile { icon: '.' }; width * height],
@@ -67,3 +110,7 @@ impl Coord {
         Coord { x, y }
     }
 }
+
+// Wrapper ID structs
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+pub struct RoomId(pub usize);

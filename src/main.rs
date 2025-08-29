@@ -4,7 +4,7 @@ mod render;
 mod utils;
 
 use crate::input::{Action, get_actions};
-use crate::map::{Coord, TileMap};
+use crate::map::{Coord, Room, RoomId};
 use crate::render::Terminal;
 use crossterm::{
     cursor::MoveTo,
@@ -23,7 +23,7 @@ fn main() {
     let mut stdout = stdout();
 
     let mut player_pos = Coord::new(5, 5);
-    let map = TileMap::create_new(10, 10);
+    let map = Room::create_new(RoomId(1), 10, 10);
 
     'game_loop: loop {
         let frame_start = Instant::now();
