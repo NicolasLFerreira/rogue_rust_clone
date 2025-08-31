@@ -22,7 +22,7 @@ pub fn get_input() -> Vec<Action> {
 fn map_key_to_action(key: KeyCode) -> Option<Action> {
     match key {
         // Meta
-        KeyCode::Esc => Some(Meta(MetaAction::Quit)),
+        KeyCode::Char('q') => Some(Meta(MetaAction::Quit)),
         KeyCode::Char(' ') => Some(Meta(MetaAction::Wait)),
 
         // Move

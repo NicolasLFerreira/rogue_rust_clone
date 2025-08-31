@@ -20,7 +20,7 @@ const FPS: u64 = 60;
 const FRAME_DURATION: Duration = Duration::from_millis(1000 / FPS);
 
 fn main() -> io::Result<()> {
-    let (w, h) = (25, 25);
+    let (w, h) = (20, 10);
     let mut game = Game::new(w, h);
     let mut renderer = CrosstermRenderer::new(w, h);
     renderer.begin()?;
@@ -40,7 +40,10 @@ fn main() -> io::Result<()> {
         // Input
 
         let actions = get_input();
-        let any_action = actions.len() > 0;
+        if actions.len() > 0 {
+            // If an action is performed, redraw the screen
+            needs_redraw = true;
+        };
 
         for action in actions {
             match action {
@@ -50,10 +53,6 @@ fn main() -> io::Result<()> {
                     MetaAction::Wait => {}
                 },
             }
-        }
-
-        if any_action {
-            needs_redraw = true
         }
 
         // Frame limiter
