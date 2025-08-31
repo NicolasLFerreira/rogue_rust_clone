@@ -1,13 +1,15 @@
 mod dungeon;
 mod entities;
+mod game;
 mod input;
-mod render;
+mod rendering;
 mod types;
 
-use crate::dungeon::{map::*, tile::*};
+use crate::dungeon::{dungeon_map::*, tile::*};
 use crate::entities::entity::{Entity, EntityType};
+use crate::game::Game;
 use crate::input::{Action, get_actions};
-use crate::render::Terminal;
+use crate::rendering::render::*;
 use crate::types::point::*;
 use crossterm::{
     cursor::MoveTo,
@@ -26,15 +28,14 @@ fn main() {
     let _terminal: Terminal = Terminal::new();
     let mut stdout = stdout();
 
-    // Player
-    let mut player: Entity = Entity::new(Point::new(5, 5), EntityType::Player);
+    let mut game: Game = Game::new();
 
-    // Entities
-    let mut entities: Vec<Entity> = Vec::new();
-
-    entities.push(Entity::new(Point::new(2, 2), EntityType::Enemy));
-    entities.push(Entity::new(Point::new(7, 3), EntityType::Enemy));
-    entities.push(Entity::new(Point::new(13, 8), EntityType::Enemy));
+    game.entities
+        .push(Entity::new(Point::new(2, 2), EntityType::Enemy));
+    game.entities
+        .push(Entity::new(Point::new(7, 3), EntityType::Enemy));
+    game.entities
+        .push(Entity::new(Point::new(13, 8), EntityType::Enemy));
 
     // Map
     let map = DungeonMap::new(20, 20);
@@ -49,23 +50,23 @@ fn main() {
         for action in actions {
             match action {
                 Action::MoveUp => {
-                    if player.point.y > 0 {
-                        player.point.y -= 1
+                    if game.player.point.y > 0 {
+                        game.player.point.y -= 1
                     }
                 }
                 Action::MoveDown => {
-                    if player.point.y < (map.height - 1) as i32 {
-                        player.point.y += 1
+                    if game.player.point.y < (map.height - 1) as i32 {
+                        game.player.point.y += 1
                     }
                 }
                 Action::MoveLeft => {
-                    if player.point.x > 0 {
-                        player.point.x -= 1
+                    if game.player.point.x > 0 {
+                        game.player.point.x -= 1
                     }
                 }
                 Action::MoveRight => {
-                    if player.point.x < (map.width - 1) as i32 {
-                        player.point.x += 1
+                    if game.player.point.x < (map.width - 1) as i32 {
+                        game.player.point.x += 1
                     }
                 }
                 Action::Quit => break 'game_loop,
@@ -90,7 +91,7 @@ fn main() {
             }
         }
 
-        for entity in std::iter::once(&player).chain(entities.iter()) {
+        for entity in std::iter::once(&game.player).chain(game.entities.iter()) {
             queue!(
                 stdout,
                 MoveTo(entity.point.x as u16, entity.point.y as u16),
@@ -111,7 +112,10 @@ fn main() {
             stdout,
             MoveTo(0, map.height as u16 + 2),
             SetForegroundColor(Color::Green),
-            Print(format!("Player pos: {} {}", player.point.y, player.point.x)),
+            Print(format!(
+                "Player pos: {} {}",
+                game.player.point.y, game.player.point.x
+            )),
             ResetColor
         )
         .unwrap();
