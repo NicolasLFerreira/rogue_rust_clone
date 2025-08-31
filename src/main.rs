@@ -6,16 +6,17 @@ mod rendering;
 mod types;
 
 use crate::game::Game;
-use crate::input::{Action, get_actions};
+use crate::input::types::*;
 use crate::rendering::crossterm_renderer::CrosstermRenderer;
 use crate::rendering::frame::Frame;
 use crate::rendering::renderer::Renderer;
+use input::input_handler::get_input;
 use std::io;
 use std::io::Write;
 use std::thread::sleep;
 use std::time::{Duration, Instant};
 
-const FPS: u64 = 10;
+const FPS: u64 = 60;
 const FRAME_DURATION: Duration = Duration::from_millis(1000 / FPS);
 
 fn main() -> io::Result<()> {
@@ -38,14 +39,16 @@ fn main() -> io::Result<()> {
 
         // Input
 
-        let actions = get_actions();
+        let actions = get_input();
         let any_action = actions.len() > 0;
 
         for action in actions {
             match action {
-                Action::Move(direction) => game.update(direction),
-                Action::Quit => break 'game,
-                Action::Wait => {}
+                Action::Move(move_action) => game.move_player(move_action),
+                Action::Meta(meta_action) => match meta_action {
+                    MetaAction::Quit => break 'game,
+                    MetaAction::Wait => {}
+                },
             }
         }
 
@@ -62,3 +65,5 @@ fn main() -> io::Result<()> {
 
     renderer.end()
 }
+
+fn meta_handler(action: MetaAction) {}

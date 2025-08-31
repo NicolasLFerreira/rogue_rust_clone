@@ -1,10 +1,9 @@
 use crate::dungeon::dungeon_map::DungeonMap;
 use crate::entities::entity::{Entity, EntityType};
-use crate::input::{Action, Direction};
+use crate::input::types::*;
 use crate::rendering::cell::Cell;
 use crate::rendering::frame::Frame;
 use crate::types::point::Point;
-use crossterm::event::KeyCode;
 use crossterm::style::Color;
 
 pub struct Game {
@@ -16,8 +15,7 @@ pub struct Game {
 impl Game {
     pub fn new(width: usize, height: usize) -> Self {
         let player: Entity = Entity::new(Point::new(0, 0), EntityType::Player);
-        let entities = vec![player];
-
+        let entities = vec![player, Entity::new(Point::new(5, 5), EntityType::Enemy)];
         Self {
             dungeon_map: DungeonMap::new(width, height),
             entities,
@@ -29,35 +27,35 @@ impl Game {
         &mut self.entities[self.player_idx]
     }
 
-    pub(crate) fn update(&mut self, key: Direction) {
+    pub(crate) fn move_player(&mut self, key: MoveAction) {
         match key {
-            Direction::Up if self.player().point.y > 0 => self.player().point.y -= 1,
-            Direction::Down if self.player().point.y < (self.dungeon_map.height - 1) as i32 => {
+            MoveAction::Up if self.player().point.y > 0 => self.player().point.y -= 1,
+            MoveAction::Down if self.player().point.y < (self.dungeon_map.height - 1) as i32 => {
                 self.player().point.y += 1
             }
-            Direction::Left if self.player().point.x > 0 => self.player().point.x -= 1,
-            Direction::Right if self.player().point.x < (self.dungeon_map.width - 1) as i32 => {
+            MoveAction::Left if self.player().point.x > 0 => self.player().point.x -= 1,
+            MoveAction::Right if self.player().point.x < (self.dungeon_map.width - 1) as i32 => {
                 self.player().point.x += 1
             }
-            Direction::UpLeft if self.player().point.x > 0 && self.player().point.y > 0 => {
+            MoveAction::UpLeft if self.player().point.x > 0 && self.player().point.y > 0 => {
                 self.player().point.x -= 1;
                 self.player().point.y -= 1;
             }
-            Direction::UpRight
+            MoveAction::UpRight
                 if self.player().point.x < (self.dungeon_map.width - 1) as i32
                     && self.player().point.y > 0 =>
             {
                 self.player().point.x += 1;
                 self.player().point.y -= 1;
             }
-            Direction::DownLeft
+            MoveAction::DownLeft
                 if self.player().point.x > 0
                     && self.player().point.y < (self.dungeon_map.height - 1) as i32 =>
             {
                 self.player().point.x -= 1;
                 self.player().point.y += 1;
             }
-            Direction::DownRight
+            MoveAction::DownRight
                 if self.player().point.x < (self.dungeon_map.width - 1) as i32
                     && self.player().point.y < (self.dungeon_map.height - 1) as i32 =>
             {
@@ -77,7 +75,7 @@ impl Game {
         });
 
         // entities (z-order: map < entities < ui)
-        for entity in self.entities.iter() {
+        for (i, entity) in self.entities.iter().enumerate() {
             frame.put(
                 entity.point.x as usize,
                 entity.point.y as usize,
@@ -90,7 +88,7 @@ impl Game {
                         EntityType::Player => Color::Yellow,
                         EntityType::Enemy => Color::DarkRed,
                     },
-                    background: Color::Grey,
+                    background: Color::Black,
                 },
             );
         }
