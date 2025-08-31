@@ -4,6 +4,7 @@ use std::fmt::Display;
 pub enum TileType {
     Floor,
     Wall,
+    Void,
 }
 
 #[derive(Copy, Clone, Debug)]
@@ -24,7 +25,7 @@ impl Tile {
 
     pub fn empty() -> Self {
         Self {
-            tile_type: TileType::Floor,
+            tile_type: TileType::Void,
             revealed: false,
             visible: false,
         }

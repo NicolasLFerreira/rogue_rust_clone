@@ -69,10 +69,12 @@ impl Game {
                     glyph: match tile_type {
                         TileType::Floor => '.',
                         TileType::Wall => '#',
+                        TileType::Void => ' ',
                     },
                     foreground: match tile_type {
                         TileType::Floor => Color::White,
                         TileType::Wall => Color::White,
+                        TileType::Void => Color::Black,
                     },
                     background: Color::Black,
                 },
