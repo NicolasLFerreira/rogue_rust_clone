@@ -1,39 +1,34 @@
 use crate::dungeon::tile::*;
+use crate::geometry::point::Point;
+use crate::geometry::rect::Rect;
 
 pub struct DungeonMap {
-    pub width: usize,
-    pub height: usize,
+    pub rect: Rect,
     tile_map: Vec<Tile>,
 }
 
 impl DungeonMap {
-    pub fn new(width: usize, height: usize) -> DungeonMap {
-        let tile_map: Vec<Tile> = (0..width * height)
+    pub fn new(rect: Rect) -> DungeonMap {
+        let tile_map: Vec<Tile> = (0..rect.area())
             .map(|i| Tile::new(TileType::Floor))
             .collect();
 
-        DungeonMap {
-            width,
-            height,
-            tile_map,
-        }
-    }
-
-    fn in_bound(&self, x: usize, y: usize) -> bool {
-        x < self.width && y < self.height
+        DungeonMap { rect, tile_map }
     }
 
     // row major
-    fn index(&self, x: usize, y: usize) -> Option<usize> {
-        self.in_bound(x, y).then(|| y * self.width + x)
+    fn index(&self, point: Point) -> Option<usize> {
+        self.rect
+            .contains(point)
+            .then(|| point.y * self.rect.width + point.x)
     }
 
-    pub fn get(&self, x: usize, y: usize) -> Option<&Tile> {
-        self.index(x, y).map(|i| &self.tile_map[i])
+    pub fn get(&self, point: Point) -> Option<&Tile> {
+        self.index(point).map(|i| &self.tile_map[i])
     }
 
-    pub fn set(&mut self, x: usize, y: usize, tile: Tile) -> bool {
-        match self.index(x, y) {
+    pub fn set(&mut self, tile: Tile, point: Point) -> bool {
+        match self.index(point) {
             Some(index) => {
                 self.tile_map[index] = tile;
                 true

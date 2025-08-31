@@ -1,3 +1,4 @@
+use crate::geometry::rect::Rect;
 use crate::rendering::frame::Frame;
 use crate::rendering::renderer::Renderer;
 use crossterm::cursor::{Hide, MoveTo, Show};
@@ -7,24 +8,26 @@ use crossterm::{execute, queue};
 use std::io::{Stdout, Write, stdout};
 
 pub struct CrosstermRenderer {
+    rect: Rect,
     out: Stdout,
     prev: Frame,
 }
 
 impl CrosstermRenderer {
-    pub fn new(w: usize, h: usize) -> Self {
+    pub fn new(rect: Rect) -> Self {
         Self {
+            rect,
             out: stdout(),
-            prev: Frame::new(w, h),
+            prev: Frame::new(rect),
         }
     }
 }
 
 impl Renderer for CrosstermRenderer {
     fn present(&mut self, frame: &Frame) -> std::io::Result<()> {
-        // Diff current frame against prev; update only changed cells.
-        let width = frame.width;
-        let height = frame.height;
+        // Diff current frame against prev; update only changed cells
+        let width = frame.rect.width;
+        let height = frame.rect.height;
 
         for y in 0..height {
             let row_off = y * width;

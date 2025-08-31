@@ -1,24 +1,23 @@
+use crate::geometry::rect::Rect;
 use crate::rendering::cell::Cell;
 use crossterm::style::Color;
 
 pub struct Frame {
-    pub width: usize,
-    pub height: usize,
+    pub rect: Rect,
     pub cells: Vec<Cell>,
 }
 
 impl Frame {
-    pub fn new(width: usize, height: usize) -> Self {
+    pub fn new(rect: Rect) -> Self {
         Self {
-            width,
-            height,
-            cells: vec![Cell::default(); width * height],
+            rect,
+            cells: vec![Cell::default(); rect.area()],
         }
     }
 
     #[inline]
     fn idx(&self, x: usize, y: usize) -> usize {
-        y * self.width + x
+        y * self.rect.width + x
     }
 
     pub(crate) fn clear(&mut self, fill: Cell) {
@@ -26,7 +25,7 @@ impl Frame {
     }
 
     pub(crate) fn put(&mut self, x: usize, y: usize, cell: Cell) {
-        if x < self.width && y < self.height {
+        if x < self.rect.width && y < self.rect.height {
             let idx = self.idx(x, y);
             self.cells[idx] = cell;
         }

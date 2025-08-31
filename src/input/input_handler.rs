@@ -1,5 +1,6 @@
-use crate::input::input_handler::Action::Meta;
+use crate::geometry::direction::Direction;
 use crate::input::action::*;
+use crate::input::input_handler::Action::Meta;
 use crossterm::event::{Event, KeyCode, KeyEventKind, poll, read};
 use std::time::Duration;
 
@@ -26,14 +27,14 @@ fn map_key_to_action(key: KeyCode) -> Option<Action> {
         KeyCode::Char(' ') => Some(Meta(MetaAction::Wait)),
 
         // Move
-        KeyCode::Up | KeyCode::Char('8') => Some(Action::Move(MoveAction::Up)),
-        KeyCode::Down | KeyCode::Char('2') => Some(Action::Move(MoveAction::Down)),
-        KeyCode::Left | KeyCode::Char('4') => Some(Action::Move(MoveAction::Left)),
-        KeyCode::Right | KeyCode::Char('6') => Some(Action::Move(MoveAction::Right)),
-        KeyCode::Char('7') => Some(Action::Move(MoveAction::UpLeft)),
-        KeyCode::Char('9') => Some(Action::Move(MoveAction::UpRight)),
-        KeyCode::Char('1') => Some(Action::Move(MoveAction::DownLeft)),
-        KeyCode::Char('3') => Some(Action::Move(MoveAction::DownRight)),
+        KeyCode::Up | KeyCode::Char('8') => Some(Action::Move(Direction::North)),
+        KeyCode::Down | KeyCode::Char('2') => Some(Action::Move(Direction::South)),
+        KeyCode::Left | KeyCode::Char('4') => Some(Action::Move(Direction::West)),
+        KeyCode::Right | KeyCode::Char('6') => Some(Action::Move(Direction::East)),
+        KeyCode::Char('7') => Some(Action::Move(Direction::NorthWest)),
+        KeyCode::Char('9') => Some(Action::Move(Direction::NorthEast)),
+        KeyCode::Char('1') => Some(Action::Move(Direction::SouthWest)),
+        KeyCode::Char('3') => Some(Action::Move(Direction::SouthEast)),
 
         // Not-implemented
         _ => None,

@@ -1,11 +1,12 @@
 mod dungeon;
 mod entities;
 mod game;
+mod geometry;
 mod input;
 mod rendering;
-mod types;
 
 use crate::game::Game;
+use crate::geometry::rect::Rect;
 use crate::input::action::*;
 use crate::rendering::crossterm_renderer::CrosstermRenderer;
 use crate::rendering::frame::Frame;
@@ -20,31 +21,38 @@ const FPS: u64 = 60;
 const FRAME_DURATION: Duration = Duration::from_millis(1000 / FPS);
 
 fn main() -> io::Result<()> {
-    let (w, h) = (20, 10);
-    let mut game = Game::new(w, h);
-    let mut renderer = CrosstermRenderer::new(w, h);
-    renderer.begin()?;
+    let screen_rect: Rect = Rect::new(20, 11);
+    let map_rect: Rect = Rect::new(20, 10);
 
-    let mut frame = Frame::new(w, h);
+    // Initialise renderer and game
+    let mut renderer = CrosstermRenderer::new(screen_rect);
+    let mut game = Game::new(map_rect);
+
+    // Rendering setup
+    renderer.begin()?;
+    let mut frame = Frame::new(screen_rect);
     let mut needs_redraw = true; // turn-based: redraw only when state changes
 
+    // Main loop. Break this and the game ends
     'game: loop {
+        // Keeps track of frame duration for FPS limiting
         let frame_start = Instant::now();
 
+        // Renders changes from previous frame
         if needs_redraw {
             game.compose(&mut frame);
             renderer.present(&frame)?;
             needs_redraw = false;
         }
 
-        // Input
-
+        // Polls for actions (i.e. input)
         let actions = get_input();
         if actions.len() > 0 {
             // If an action is performed, redraw the screen
             needs_redraw = true;
         };
 
+        // Pattern matches action categories to their respective handlers
         for action in actions {
             match action {
                 Action::Move(move_action) => game.move_player(move_action),

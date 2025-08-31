@@ -1,4 +1,4 @@
-use crate::types::point::Point;
+use crate::geometry::point::Point;
 
 pub enum EntityType {
     Player,
