@@ -17,7 +17,7 @@ use std::io::Write;
 use std::thread::sleep;
 use std::time::{Duration, Instant};
 
-const FPS: u64 = 60;
+const FPS: u64 = 30;
 const FRAME_DURATION: Duration = Duration::from_millis(1000 / FPS);
 
 fn main() -> io::Result<()> {
