@@ -1,5 +1,5 @@
 use crate::input::input_handler::Action::Meta;
-use crate::input::types::*;
+use crate::input::action::*;
 use crossterm::event::{Event, KeyCode, KeyEventKind, poll, read};
 use std::time::Duration;
 

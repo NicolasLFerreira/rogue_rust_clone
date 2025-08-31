@@ -6,7 +6,7 @@ mod rendering;
 mod types;
 
 use crate::game::Game;
-use crate::input::types::*;
+use crate::input::action::*;
 use crate::rendering::crossterm_renderer::CrosstermRenderer;
 use crate::rendering::frame::Frame;
 use crate::rendering::renderer::Renderer;

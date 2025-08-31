@@ -1,2 +1,2 @@
 pub mod input_handler;
-pub mod types;
+pub mod action;

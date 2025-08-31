@@ -1,6 +1,6 @@
 use crate::dungeon::dungeon_map::DungeonMap;
 use crate::entities::entity::{Entity, EntityType};
-use crate::input::types::*;
+use crate::input::action::*;
 use crate::rendering::cell::Cell;
 use crate::rendering::frame::Frame;
 use crate::types::point::Point;
