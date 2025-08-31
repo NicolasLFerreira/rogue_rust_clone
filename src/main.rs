@@ -46,23 +46,23 @@ fn main() {
         for action in actions {
             match action {
                 Action::MoveUp => {
-                    if game.player.point.y > 0 {
-                        game.player.point.y -= 1
+                    if game.player().point.y > 0 {
+                        game.player().point.y -= 1
                     }
                 }
                 Action::MoveDown => {
-                    if game.player.point.y < (game.dungeon_map.height - 1) as i32 {
-                        game.player.point.y += 1
+                    if game.player().point.y < (game.dungeon_map.height - 1) as i32 {
+                        game.player().point.y += 1
                     }
                 }
                 Action::MoveLeft => {
-                    if game.player.point.x > 0 {
-                        game.player.point.x -= 1
+                    if game.player().point.x > 0 {
+                        game.player().point.x -= 1
                     }
                 }
                 Action::MoveRight => {
-                    if game.player.point.x < (game.dungeon_map.width - 1) as i32 {
-                        game.player.point.x += 1
+                    if game.player().point.x < (game.dungeon_map.width - 1) as i32 {
+                        game.player().point.x += 1
                     }
                 }
                 Action::Quit => break 'game_loop,
@@ -87,7 +87,7 @@ fn main() {
             }
         }
 
-        for entity in std::iter::once(&game.player).chain(game.entities.iter()) {
+        for entity in std::iter::once(&game.player()).chain(game.entities.iter()) {
             queue!(
                 stdout,
                 MoveTo(entity.point.x as u16, entity.point.y as u16),
@@ -110,7 +110,8 @@ fn main() {
             SetForegroundColor(Color::Green),
             Print(format!(
                 "Player pos: {} {}",
-                game.player.point.y, game.player.point.x
+                game.player().point.y,
+                game.player().point.x
             )),
             ResetColor
         )
