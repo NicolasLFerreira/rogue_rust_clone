@@ -5,7 +5,7 @@ mod input;
 mod rendering;
 mod types;
 
-use crate::dungeon::{dungeon_map::*, tile::*};
+use crate::dungeon::tile::*;
 use crate::entities::entity::{Entity, EntityType};
 use crate::game::Game;
 use crate::input::{Action, get_actions};
@@ -16,7 +16,6 @@ use crossterm::{
     queue,
     style::{Color, Print, ResetColor, SetForegroundColor},
 };
-use std::fmt::Formatter;
 use std::io::{Write, stdout};
 use std::thread::sleep;
 use std::time::{Duration, Instant};
@@ -37,9 +36,6 @@ fn main() {
     game.entities
         .push(Entity::new(Point::new(13, 8), EntityType::Enemy));
 
-    // Map
-    let map = DungeonMap::new(20, 20);
-
     'game_loop: loop {
         let frame_start = Instant::now();
 
@@ -55,7 +51,7 @@ fn main() {
                     }
                 }
                 Action::MoveDown => {
-                    if game.player.point.y < (map.height - 1) as i32 {
+                    if game.player.point.y < (game.dungeon_map.height - 1) as i32 {
                         game.player.point.y += 1
                     }
                 }
@@ -65,7 +61,7 @@ fn main() {
                     }
                 }
                 Action::MoveRight => {
-                    if game.player.point.x < (map.width - 1) as i32 {
+                    if game.player.point.x < (game.dungeon_map.width - 1) as i32 {
                         game.player.point.x += 1
                     }
                 }
@@ -77,12 +73,12 @@ fn main() {
         // --- RENDER ---
         Terminal::clear();
 
-        for x in 0..map.width {
-            for y in 0..map.height {
+        for x in 0..game.dungeon_map.width {
+            for y in 0..game.dungeon_map.height {
                 queue!(
                     stdout,
                     MoveTo(x as u16, y as u16),
-                    Print(match map.get(y, x).unwrap().tile_type {
+                    Print(match game.dungeon_map.get(y, x).unwrap().tile_type {
                         TileType::Floor => '.',
                         TileType::Wall => '#',
                     })
@@ -110,7 +106,7 @@ fn main() {
 
         queue!(
             stdout,
-            MoveTo(0, map.height as u16 + 2),
+            MoveTo(0, game.dungeon_map.height as u16 + 2),
             SetForegroundColor(Color::Green),
             Print(format!(
                 "Player pos: {} {}",
