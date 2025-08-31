@@ -16,10 +16,19 @@ pub struct Game {
 
 impl Game {
     pub fn new(rect: Rect) -> Self {
+        // Player
         let player: Entity = Entity::new(Point::new(0, 0), EntityType::Player);
-        let entities = vec![player, Entity::new(Point::new(5, 5), EntityType::Enemy)];
+
+        // NPCs
+        let mut entities = vec![player];
+        // entities.push(Entity::new(Point::new(5, 5), EntityType::Enemy));
+
+        // Map
+        let mut dungeon_map = DungeonMap::new(rect);
+        dungeon_map.generate_map();
+
         Self {
-            dungeon_map: DungeonMap::new(rect),
+            dungeon_map,
             entities,
             player_idx: 0,
         }
@@ -59,7 +68,7 @@ impl Game {
                     },
                     foreground: match tile_type {
                         TileType::Floor => Color::White,
-                        TileType::Wall => Color::DarkGrey,
+                        TileType::Wall => Color::White,
                     },
                     background: Color::Black,
                 },

@@ -14,9 +14,17 @@ pub struct Tile {
 }
 
 impl Tile {
-    pub fn new(tile_type: TileType) -> Tile {
-        Tile {
+    pub fn new(tile_type: TileType) -> Self {
+        Self {
             tile_type,
+            revealed: false,
+            visible: false,
+        }
+    }
+
+    pub fn empty() -> Self {
+        Self {
+            tile_type: TileType::Floor,
             revealed: false,
             visible: false,
         }
