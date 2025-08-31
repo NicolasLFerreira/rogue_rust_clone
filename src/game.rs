@@ -48,32 +48,28 @@ impl Game {
     pub(crate) fn compose(&self, frame: &mut Frame) {
         // static background (example)
 
-        for x in 0..self.dungeon_map.rect.width {
-            for y in 0..self.dungeon_map.rect.height {
-                let tile_type = self.dungeon_map.get(Point::from((x, y))).unwrap().tile_type;
-                frame.put(
-                    x,
-                    y,
-                    Cell {
-                        glyph: match tile_type {
-                            TileType::Floor => '.',
-                            TileType::Wall => '#',
-                        },
-                        foreground: match tile_type {
-                            TileType::Floor => Color::White,
-                            TileType::Wall => Color::DarkGrey,
-                        },
-                        background: Color::Black,
+        for point in self.dungeon_map.rect.iter_points() {
+            let tile_type = self.dungeon_map.get(point).unwrap().tile_type;
+            frame.put(
+                point,
+                Cell {
+                    glyph: match tile_type {
+                        TileType::Floor => '.',
+                        TileType::Wall => '#',
                     },
-                );
-            }
+                    foreground: match tile_type {
+                        TileType::Floor => Color::White,
+                        TileType::Wall => Color::DarkGrey,
+                    },
+                    background: Color::Black,
+                },
+            );
         }
 
         // entities (z-order: map < entities < ui)
-        for (i, entity) in self.entities.iter().enumerate() {
+        for entity in self.entities.iter() {
             frame.put(
-                entity.point.x,
-                entity.point.y,
+                entity.point,
                 Cell {
                     glyph: match entity.entity_type {
                         EntityType::Player => '@',
@@ -90,8 +86,7 @@ impl Game {
 
         // UI overlay
         frame.put_str(
-            0,
-            self.dungeon_map.rect.height,
+            Point::new(0, self.dungeon_map.rect.height),
             "q to quit",
             Color::Yellow,
             Color::Black,

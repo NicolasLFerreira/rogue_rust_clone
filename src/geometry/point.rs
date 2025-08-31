@@ -71,6 +71,17 @@ impl Add for Point {
     }
 }
 
+impl Add<(usize, usize)> for Point {
+    type Output = Point;
+
+    fn add(self, rhs: (usize, usize)) -> Self::Output {
+        Point {
+            x: self.x + rhs.0,
+            y: self.y + rhs.1,
+        }
+    }
+}
+
 impl Sub for Point {
     type Output = Delta;
 

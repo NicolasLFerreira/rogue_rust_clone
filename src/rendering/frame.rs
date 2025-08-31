@@ -1,3 +1,4 @@
+use crate::geometry::point::Point;
 use crate::geometry::rect::Rect;
 use crate::rendering::cell::Cell;
 use crossterm::style::Color;
@@ -16,33 +17,31 @@ impl Frame {
     }
 
     #[inline]
-    fn idx(&self, x: usize, y: usize) -> usize {
-        y * self.rect.width + x
+    fn idx(&self, point: Point) -> usize {
+        point.y * self.rect.width + point.x
     }
 
     pub(crate) fn clear(&mut self, fill: Cell) {
         self.cells.fill(fill);
     }
 
-    pub(crate) fn put(&mut self, x: usize, y: usize, cell: Cell) {
-        if x < self.rect.width && y < self.rect.height {
-            let idx = self.idx(x, y);
+    pub(crate) fn put(&mut self, point: Point, cell: Cell) {
+        if self.rect.contains(point) {
+            let idx = self.idx(point);
             self.cells[idx] = cell;
         }
     }
 
     pub(crate) fn put_str(
         &mut self,
-        x: usize,
-        y: usize,
+        point: Point,
         string: &str,
         foreground: Color,
         background: Color,
     ) {
         for (i, glyph) in string.chars().enumerate() {
             self.put(
-                x + i,
-                y,
+                point + (i, 0),
                 Cell {
                     glyph,
                     foreground,
