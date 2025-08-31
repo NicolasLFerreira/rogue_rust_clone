@@ -1,11 +1,14 @@
 mod dungeon;
+mod entities;
 mod input;
 mod render;
-mod utils;
+mod types;
 
-use crate::dungeon::{map::*, tile::*, utils::*};
+use crate::dungeon::{map::*, tile::*};
+use crate::entities::entity::{Entity, EntityType};
 use crate::input::{Action, get_actions};
 use crate::render::Terminal;
+use crate::types::point::*;
 use crossterm::{
     cursor::MoveTo,
     queue,
@@ -23,7 +26,7 @@ fn main() {
     let _terminal: Terminal = Terminal::new();
     let mut stdout = stdout();
 
-    let mut player_pos = Coord::new(5, 5);
+    let mut player: Entity = Entity::new(Point::new(5, 5), EntityType::Player);
     let map = DungeonMap::new(20, 20);
 
     'game_loop: loop {
@@ -36,23 +39,23 @@ fn main() {
         for action in actions {
             match action {
                 Action::MoveUp => {
-                    if player_pos.y > 0 {
-                        player_pos.y -= 1
+                    if player.point.y > 0 {
+                        player.point.y -= 1
                     }
                 }
                 Action::MoveDown => {
-                    if player_pos.y < map.height - 1 {
-                        player_pos.y += 1
+                    if player.point.y < (map.height - 1) as i32 {
+                        player.point.y += 1
                     }
                 }
                 Action::MoveLeft => {
-                    if player_pos.x > 0 {
-                        player_pos.x -= 1
+                    if player.point.x > 0 {
+                        player.point.x -= 1
                     }
                 }
                 Action::MoveRight => {
-                    if player_pos.x < map.width - 1 {
-                        player_pos.x += 1
+                    if player.point.x < (map.width - 1) as i32 {
+                        player.point.x += 1
                     }
                 }
                 Action::Quit => break 'game_loop,
@@ -79,7 +82,7 @@ fn main() {
 
         queue!(
             stdout,
-            MoveTo(player_pos.x as u16, player_pos.y as u16),
+            MoveTo(player.point.x as u16, player.point.y as u16),
             SetForegroundColor(Color::Yellow),
             Print("@"),
             ResetColor
@@ -90,7 +93,7 @@ fn main() {
             stdout,
             MoveTo(0, map.height as u16 + 2),
             SetForegroundColor(Color::Red),
-            Print(format!("Player pos: {} {}", player_pos.y, player_pos.x)),
+            Print(format!("Player pos: {} {}", player.point.y, player.point.x)),
             ResetColor
         )
         .unwrap();
