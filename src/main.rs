@@ -26,7 +26,17 @@ fn main() {
     let _terminal: Terminal = Terminal::new();
     let mut stdout = stdout();
 
+    // Player
     let mut player: Entity = Entity::new(Point::new(5, 5), EntityType::Player);
+
+    // Entities
+    let mut entities: Vec<Entity> = Vec::new();
+
+    entities.push(Entity::new(Point::new(2, 2), EntityType::Enemy));
+    entities.push(Entity::new(Point::new(7, 3), EntityType::Enemy));
+    entities.push(Entity::new(Point::new(13, 8), EntityType::Enemy));
+
+    // Map
     let map = DungeonMap::new(20, 20);
 
     'game_loop: loop {
@@ -80,19 +90,27 @@ fn main() {
             }
         }
 
-        queue!(
-            stdout,
-            MoveTo(player.point.x as u16, player.point.y as u16),
-            SetForegroundColor(Color::Yellow),
-            Print("@"),
-            ResetColor
-        )
-        .unwrap();
+        for entity in std::iter::once(&player).chain(entities.iter()) {
+            queue!(
+                stdout,
+                MoveTo(entity.point.x as u16, entity.point.y as u16),
+                SetForegroundColor(match entity.entity_type {
+                    EntityType::Player => Color::Yellow,
+                    EntityType::Enemy => Color::Red,
+                }),
+                Print(match entity.entity_type {
+                    EntityType::Player => '@',
+                    EntityType::Enemy => '&',
+                }),
+                ResetColor
+            )
+            .unwrap();
+        }
 
         queue!(
             stdout,
             MoveTo(0, map.height as u16 + 2),
-            SetForegroundColor(Color::Red),
+            SetForegroundColor(Color::Green),
             Print(format!("Player pos: {} {}", player.point.y, player.point.x)),
             ResetColor
         )
