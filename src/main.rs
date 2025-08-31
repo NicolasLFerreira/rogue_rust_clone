@@ -1,16 +1,17 @@
+mod dungeon;
 mod input;
-mod map;
 mod render;
 mod utils;
 
+use crate::dungeon::{map::*, tile::*, utils::*};
 use crate::input::{Action, get_actions};
-use crate::map::{Coord, Room, RoomId};
 use crate::render::Terminal;
 use crossterm::{
     cursor::MoveTo,
     queue,
     style::{Color, Print, ResetColor, SetForegroundColor},
 };
+use std::fmt::Formatter;
 use std::io::{Write, stdout};
 use std::thread::sleep;
 use std::time::{Duration, Instant};
@@ -23,7 +24,7 @@ fn main() {
     let mut stdout = stdout();
 
     let mut player_pos = Coord::new(5, 5);
-    let map = Room::create_new(RoomId(1), 10, 10);
+    let map = DungeonMap::new(20, 20);
 
     'game_loop: loop {
         let frame_start = Instant::now();
@@ -64,7 +65,15 @@ fn main() {
 
         for x in 0..map.width {
             for y in 0..map.height {
-                queue!(stdout, MoveTo(x as u16, y as u16), Print(map.get(y, x).unwrap())).unwrap();
+                queue!(
+                    stdout,
+                    MoveTo(x as u16, y as u16),
+                    Print(match map.get(y, x).unwrap().tile_type {
+                        TileType::Floor => '.',
+                        TileType::Wall => '#',
+                    })
+                )
+                .unwrap();
             }
         }
 
@@ -73,6 +82,15 @@ fn main() {
             MoveTo(player_pos.x as u16, player_pos.y as u16),
             SetForegroundColor(Color::Yellow),
             Print("@"),
+            ResetColor
+        )
+        .unwrap();
+
+        queue!(
+            stdout,
+            MoveTo(0, map.height as u16 + 2),
+            SetForegroundColor(Color::Red),
+            Print(format!("Player pos: {} {}", player_pos.y, player_pos.x)),
             ResetColor
         )
         .unwrap();
