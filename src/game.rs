@@ -48,8 +48,8 @@ impl Game {
     pub(crate) fn compose(&self, frame: &mut Frame) {
         // static background (example)
 
-        for point in self.dungeon_map.rect.iter_points() {
-            let tile_type = self.dungeon_map.get(point).unwrap().tile_type;
+        for (point, tile) in self.dungeon_map.iter_tiles() {
+            let tile_type = tile.tile_type;
             frame.put(
                 point,
                 Cell {
@@ -63,7 +63,7 @@ impl Game {
                     },
                     background: Color::Black,
                 },
-            );
+            )
         }
 
         // entities (z-order: map < entities < ui)

@@ -18,13 +18,19 @@ impl DungeonMap {
 
     // row major
     fn index(&self, point: Point) -> Option<usize> {
-        self.rect
-            .contains(point)
-            .then(|| point.y * self.rect.width + point.x)
+        if self.rect.contains(point) {
+            Some((point.y - self.rect.y) * self.rect.width + (point.x - self.rect.x))
+        } else {
+            None
+        }
     }
 
     pub fn get(&self, point: Point) -> Option<&Tile> {
         self.index(point).map(|i| &self.tile_map[i])
+    }
+
+    pub fn get_mut(&mut self, point: Point) -> Option<&mut Tile> {
+        self.index(point).map(|i| &mut self.tile_map[i])
     }
 
     pub fn set(&mut self, tile: Tile, point: Point) -> bool {
@@ -35,5 +41,11 @@ impl DungeonMap {
             }
             None => false,
         }
+    }
+
+    pub fn iter_tiles(&self) -> impl Iterator<Item = (Point, &Tile)> {
+        self.rect
+            .iter_points()
+            .filter_map(move |p| self.get(p).map(|tile| (p, tile)))
     }
 }
