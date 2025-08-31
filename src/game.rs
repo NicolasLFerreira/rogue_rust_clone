@@ -44,14 +44,18 @@ impl Game {
 
     pub(crate) fn move_player(&mut self, key: Direction) {
         let delta = key.to_delta();
-        let rect = self.dungeon_map.rect;
-        let player = self.player_mut();
-
-        if let Some(new_point) = player.point.offset(delta) {
-            if rect.contains(new_point) {
-                player.point = new_point;
+        if let Some(new_point) = self.player().point.offset(delta) {
+            if self.open_tile(new_point) {
+                self.player_mut().point = new_point;
             }
         }
+    }
+
+    fn open_tile(&self, point: Point) -> bool {
+        self.dungeon_map
+            .get(point)
+            .map(|tile| tile.tile_type == TileType::Floor)
+            .unwrap_or(false)
     }
 
     pub(crate) fn compose(&self, frame: &mut Frame) {
