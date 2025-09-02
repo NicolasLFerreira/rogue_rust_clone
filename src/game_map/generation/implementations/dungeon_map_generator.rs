@@ -63,7 +63,7 @@ impl MapGenerator for DungeonMapGenerator {
 // Generation
 impl DungeonMapGenerator {
     fn create_room(&mut self, rect: Rect) -> Rect {
-        let min_size = 8;
+        let min_size = 4;
 
         let width = self
             .rng
