@@ -6,6 +6,7 @@ mod input;
 mod rendering;
 
 use crate::game::Game;
+use crate::geometry::delta::Delta;
 use crate::geometry::rect::Rect;
 use crate::input::action::*;
 use crate::rendering::crossterm_renderer::CrosstermRenderer;
@@ -21,8 +22,10 @@ const FPS: u64 = 30;
 const FRAME_DURATION: Duration = Duration::from_millis(1000 / FPS);
 
 fn main() -> io::Result<()> {
-    let screen_rect: Rect = Rect::new(0, 0, 61, 22);
-    let map_rect: Rect = Rect::new(0, 0, 60, 21);
+    let sector_n = 3;
+    let base = Delta::new(52, 13) * sector_n;
+    let screen_rect: Rect = Rect::new_dimensions(base.dx as usize, base.dy as usize + 3);
+    let map_rect: Rect = Rect::new_dimensions(base.dx as usize, base.dy as usize);
 
     // Initialise renderer and game
     let mut renderer = CrosstermRenderer::new(screen_rect);
@@ -72,5 +75,3 @@ fn main() -> io::Result<()> {
 
     renderer.end()
 }
-
-fn meta_handler(action: MetaAction) {}
