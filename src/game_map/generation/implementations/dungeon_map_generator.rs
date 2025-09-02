@@ -31,9 +31,15 @@ impl MapGenerator for DungeonMapGenerator {
 
         for x in 0..3 {
             for y in 0..3 {
-                let region = base_region.translate(Delta::new(rw as i32 * x, rh as i32 * y));
-                let room = self.create_room(region);
-                Self::apply_room(tile_map, room);
+                let region_rect = base_region.translate(Delta::new(rw as i32 * x, rh as i32 * y));
+                let room_rect = self.create_room(region_rect);
+                let mut room = Self::generate_tile_map(room_rect);
+
+                // Decides whether to place a door
+                let door_point = pick_wall_point(room_rect);
+                room.set(door_point, Tile::new(TileType::Floor));
+
+                apply_tile_map(tile_map, &room);
             }
         }
     }
@@ -52,7 +58,7 @@ impl DungeonMapGenerator {
         Rect::new_anchor(anchor, width, height)
     }
 
-    fn apply_room(tile_map: &mut TileMap, room: Rect) {
+    fn generate_tile_map(room: Rect) -> TileMap {
         let mut vec_t: Vec<Tile> = Vec::with_capacity(room.area());
 
         for y in 0..room.height {
@@ -65,15 +71,9 @@ impl DungeonMapGenerator {
             }
         }
 
-        let mut new_tile_map = TileMap {
+        TileMap {
             tile_map: vec_t,
             rect: room,
-        };
-
-        // Places door
-        let door_point = pick_wall_point(room);
-        new_tile_map.set(door_point, Tile::new(TileType::Floor));
-
-        apply_tile_map(tile_map, &new_tile_map);
+        }
     }
 }
