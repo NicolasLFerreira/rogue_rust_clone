@@ -16,16 +16,14 @@ pub struct Game {
 
 impl Game {
     pub fn new(rect: Rect) -> Self {
-        // Player
-        let player: Entity = Entity::new(Point::new(0, 0), EntityType::Player);
-
-        // NPCs
-        let mut entities = vec![player];
-        // entities.push(Entity::new(Point::new(5, 5), EntityType::Enemy));
-
         // Map
         let mut dungeon_map = DungeonMap::new(rect);
         dungeon_map.generate_map();
+
+        // Entities
+        let player: Entity = Entity::new(dungeon_map.rnd_floor_point(), EntityType::Player);
+        let mut entities = vec![player];
+        // entities.push(Entity::new(Point::new(5, 5), EntityType::Enemy));
 
         Self {
             dungeon_map,
@@ -62,8 +60,9 @@ impl Game {
         // Map
         for (point, tile) in self.dungeon_map.iter_tiles() {
             let tile_type = tile.tile_type;
-            let visible = tile.visible;
-            if visible {
+
+            // Renders only what's visible
+            if tile.visible {
                 frame.put(
                     point,
                     Cell {

@@ -24,6 +24,7 @@ fn map_key_to_action(key: KeyCode) -> Option<Action> {
     match key {
         // Meta
         KeyCode::Char('q') => Some(Meta(MetaAction::Quit)),
+        KeyCode::Char('r') => Some(Meta(MetaAction::Restart)),
         KeyCode::Char(' ') => Some(Meta(MetaAction::Wait)),
 
         // Move

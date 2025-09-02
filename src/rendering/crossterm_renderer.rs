@@ -1,4 +1,5 @@
 use crate::geometry::rect::Rect;
+use crate::rendering::cell::Cell;
 use crate::rendering::frame::Frame;
 use crate::rendering::renderer::Renderer;
 use crossterm::cursor::{Hide, MoveTo, Show};
@@ -52,6 +53,7 @@ impl Renderer for CrosstermRenderer {
     }
 
     fn begin(&mut self) -> std::io::Result<()> {
+        self.prev.clear(Cell::default());
         enable_raw_mode()?;
         execute!(self.out, Hide, Clear(ClearType::All))
     }

@@ -78,7 +78,6 @@ impl DungeonMap {
 
 // Other
 impl DungeonMap {
-    // row major
     fn index(&self, point: Point) -> Option<usize> {
         if self.rect.contains(point) {
             Some((point.y - self.rect.y) * self.rect.width + (point.x - self.rect.x))
@@ -109,5 +108,21 @@ impl DungeonMap {
         self.rect
             .iter_points()
             .filter_map(move |p| self.get(p).map(|tile| (p, tile)))
+    }
+
+    pub fn rnd_floor_point(&self) -> Point {
+        loop {
+            let point = self.rnd_point();
+            if self.get(point).unwrap().tile_type == TileType::Floor {
+                return point;
+            }
+        }
+    }
+
+    fn rnd_point(&self) -> Point {
+        Point::new(
+            rand::random_range(self.rect.x..self.rect.x + self.rect.width),
+            rand::random_range(self.rect.y..self.rect.y + self.rect.height),
+        )
     }
 }

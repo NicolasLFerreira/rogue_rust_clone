@@ -7,6 +7,6 @@ pub enum Action {
 
 pub enum MetaAction {
     Quit,
+    Restart,
     Wait,
 }
-
