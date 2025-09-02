@@ -1,12 +1,11 @@
-mod game_map;
 mod entities;
 mod game;
+mod game_map;
 mod geometry;
 mod input;
 mod rendering;
 
 use crate::game::Game;
-use crate::geometry::delta::Delta;
 use crate::geometry::rect::Rect;
 use crate::input::action::*;
 use crate::rendering::crossterm_renderer::CrosstermRenderer;
@@ -21,11 +20,12 @@ const FPS: u64 = 30;
 const FRAME_DURATION: Duration = Duration::from_millis(1000 / FPS);
 
 fn main() -> io::Result<()> {
+    let sw: usize = 156;
+    let sh: usize = 42;
+
     // Top-level variables
-    let sector_n = 3;
-    let base = Delta::new(52, 13) * sector_n;
-    let screen_rect: Rect = Rect::new_dimensions(base.dx as usize, base.dy as usize + 3);
-    let map_rect: Rect = Rect::new_dimensions(base.dx as usize, base.dy as usize);
+    let screen_rect: Rect = Rect::new_dimensions(sw, sh);
+    let map_rect: Rect = Rect::new_dimensions(sw, sh - 3);
 
     // Renderer instance remains the same for the program's entire lifetime
     let mut renderer: Box<dyn Renderer> = Box::new(CrosstermRenderer::new(screen_rect));

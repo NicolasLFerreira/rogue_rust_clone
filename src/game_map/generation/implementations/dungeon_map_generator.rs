@@ -5,6 +5,8 @@ use crate::game_map::tile_map::TileMap;
 use crate::geometry::point::Point;
 use crate::geometry::rect::Rect;
 use rand::Rng;
+use rand::distr::Distribution;
+use rand::distr::weighted::WeightedIndex;
 use rand::rngs::ThreadRng;
 use rand::seq::SliceRandom;
 
@@ -25,37 +27,35 @@ impl DungeonMapGenerator {
 // Trait
 impl MapGenerator for DungeonMapGenerator {
     fn generate_map(&mut self, tile_map: &mut TileMap) {
-        let rw = self.rect.width / 3;
-        let rh = self.rect.height / 3;
+        // Base values for regions layout and count
+        let rx: usize = 3;
+        let ry: usize = 3;
+        let ra: usize = rx * ry;
 
-        // Min 3, max 9 rooms
-        let n = self.rng.random_range(3..=9);
+        // Region dimensions
+        let rw = self.rect.width / rx;
+        let rh = self.rect.height / ry;
 
-        let mut available: Vec<i32> = vec![0, 1, 2, 3, 4, 5, 6, 7, 8];
-        available.shuffle::<ThreadRng>(&mut self.rng);
+        // Produces random amount of rooms and takes positions
+        let room_count = self.biased_room_count(ra);
+        let mut available: Vec<usize> = (0..ra).collect();
+        let (selected_indices, _) = available.partial_shuffle(&mut self.rng, room_count);
 
-        let mut selected = vec![false; 9];
+        for &mut i in selected_indices {
+            let x = i % rx;
+            let y = i / rx;
 
-        for t in 0..n {
-            let i = available[8 - t];
-            selected[i as usize] = true;
-        }
+            let region_anchor = Point::new(rw * x, rh * y);
+            let region_rect = Rect::new_anchor(region_anchor, rw, rh);
 
-        for x in 0..3 {
-            for y in 0..3 {
-                if selected[y * 3 + x] {
-                    let region_anchor = Point::new(rw * x, rh * y);
-                    let region_rect = Rect::new_anchor(region_anchor, rw, rh);
-                    let room_rect = self.create_room(region_rect);
-                    let mut room = Self::generate_tile_map(room_rect);
+            let room_rect = self.create_room(region_rect);
+            let mut room_map = Self::generate_tile_map(room_rect);
 
-                    // Decides whether to place a door
-                    let door_point = pick_wall_point(room_rect);
-                    room.set(door_point, Tile::new(TileType::Floor));
+            // Place a door on a wall
+            let door_point = pick_wall_point(room_rect);
+            room_map.set(door_point, Tile::new(TileType::Floor));
 
-                    apply_tile_map(tile_map, &room);
-                }
-            }
+            apply_tile_map(tile_map, &room_map);
         }
     }
 }
@@ -63,7 +63,7 @@ impl MapGenerator for DungeonMapGenerator {
 // Generation
 impl DungeonMapGenerator {
     fn create_room(&mut self, rect: Rect) -> Rect {
-        let min_size = 4;
+        let min_size = 8;
 
         let width = self
             .rng
@@ -97,5 +97,22 @@ impl DungeonMapGenerator {
             tile_map: vec_t,
             rect: room,
         }
+    }
+
+    fn biased_room_count(&mut self, max_count: usize) -> usize {
+        let min_rooms = max_count.isqrt();
+        let room_counts: Vec<usize> = (min_rooms..=max_count).collect();
+        let mid = (min_rooms + max_count) / 2;
+
+        let weights: Vec<usize> = room_counts
+            .iter()
+            .map(|&x| {
+                // peak at mid-point
+                let dist = (x as isize - mid as isize).abs();
+                (max_count as isize + dist * 2).max(1) as usize
+            })
+            .collect();
+        let dist = WeightedIndex::new(&weights).unwrap();
+        room_counts[dist.sample(&mut self.rng)]
     }
 }
