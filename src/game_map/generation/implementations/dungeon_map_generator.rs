@@ -2,10 +2,12 @@ use crate::game_map::generation::implementations::utils::apply_tile_map;
 use crate::game_map::generation::map_generator::MapGenerator;
 use crate::game_map::tile::{Tile, TileType};
 use crate::game_map::tile_map::TileMap;
+use crate::geometry::delta::Delta;
 use crate::geometry::point::Point;
 use crate::geometry::rect::Rect;
 use rand::Rng;
 use rand::rngs::ThreadRng;
+use std::collections::HashMap;
 
 pub struct DungeonMapGenerator {
     rect: Rect,
@@ -24,42 +26,34 @@ impl DungeonMapGenerator {
 // Trait
 impl MapGenerator for DungeonMapGenerator {
     fn generate_map(&mut self, tile_map: &mut TileMap) {
-        for room in self.rooms(6).iter() {
-            Self::apply_room(tile_map, *room)
+        let rw = self.rect.width / 3;
+        let rh = self.rect.height / 3;
+        let base_region = Rect::new(0, 0, rw, rh);
+
+        for x in 0..3 {
+            for y in 0..3 {
+                let region = base_region.translate(Delta::new(rw as i32 * x, rh as i32 * y));
+                let room = self.create_room(region);
+                Self::apply_room(tile_map, room);
+            }
         }
     }
 }
 
 // Generation
 impl DungeonMapGenerator {
-    fn rooms(&mut self, n: usize) -> Vec<Room> {
-        let mut rooms: Vec<Room> = Vec::with_capacity(n);
-
-        for _ in 0..n {
-            loop {
-                let trial_room = self.create_room();
-                if !rooms.iter().any(|r| r.intersect(trial_room)) {
-                    rooms.push(trial_room);
-                    break;
-                }
-            }
-        }
-
-        rooms
-    }
-
-    fn create_room(&mut self) -> Room {
+    fn create_room(&mut self, rect: Rect) -> Rect {
         let width = self.rng.random_range(4..12);
         let height = self.rng.random_range(4..12);
         let anchor = Point::new(
-            self.rng.random_range(0..self.rect.width - width),
-            self.rng.random_range(0..self.rect.height - height),
+            self.rng.random_range(rect.x..rect.x + rect.width - width),
+            self.rng.random_range(rect.y..rect.y + rect.height - height),
         );
 
-        Room::new_anchor(anchor, width, height)
+        Rect::new_anchor(anchor, width, height)
     }
 
-    fn apply_room(tile_map: &mut TileMap, room: Room) {
+    fn apply_room(tile_map: &mut TileMap, room: Rect) {
         let mut vec_t: Vec<Tile> = Vec::with_capacity(room.area());
 
         for y in 0..room.height {
@@ -80,5 +74,3 @@ impl DungeonMapGenerator {
         apply_tile_map(tile_map, &tm);
     }
 }
-
-type Room = Rect;
