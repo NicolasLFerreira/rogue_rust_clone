@@ -21,7 +21,10 @@ const FPS: u64 = 30;
 const FRAME_DURATION: Duration = Duration::from_millis(1000 / FPS);
 
 fn main() -> io::Result<()> {
-    let screen_rect: Rect = Rect::new(0, 0, 40, 21);
+
+
+
+    let screen_rect: Rect = Rect::new(0, 0, 60, 21);
     let map_rect: Rect = Rect::new(0, 0, 40, 20);
 
     // Initialise renderer and game
