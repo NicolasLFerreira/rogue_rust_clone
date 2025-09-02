@@ -13,7 +13,7 @@ pub struct DungeonMap {
 // Constructor
 impl DungeonMap {
     pub fn new(rect: Rect) -> DungeonMap {
-        let mut tile_map: Vec<Tile> = vec![Tile::new(TileType::Floor); rect.area()];
+        let mut tile_map: Vec<Tile> = vec![Tile::empty(); rect.area()];
         tile_map[0] = Tile::new(TileType::Wall);
         DungeonMap { rect, tile_map }
     }
@@ -32,39 +32,44 @@ impl DungeonMap {
         // Room 1
         for i in 0..3 {
             let room = self.generate_room(Rect::new_dimensions(rx, ry).translate(sdf.mul(i)));
-            self.apply_room(room)
+            self.apply_room(&room)
         }
     }
 
-    fn generate_room(&self, rect: Rect) -> Room {
+    fn generate_room(&self, rect: Rect) -> DungeonMap {
         let mut tile_map = Vec::with_capacity(rect.area());
         for y in 0..rect.height {
             for x in 0..rect.width {
                 let tile = if x == 0 || x == rect.width - 1 || y == 0 || y == rect.height - 1 {
-                    Tile::new(TileType::Wall)
+                    Tile {
+                        tile_type: TileType::Wall,
+                        visible: true,
+                        revealed: true,
+                    }
                 } else {
-                    Tile::new(TileType::Floor)
+                    Tile {
+                        tile_type: TileType::Floor,
+                        visible: true,
+                        revealed: true,
+                    }
                 };
                 tile_map.push(tile);
             }
         }
-        Room { rect, tile_map }
+        let mut room = DungeonMap { rect, tile_map };
+        let door = rect.pick_edge_point();
+        match room.get_mut(door) {
+            Some(tile) => {
+                tile.visible = false;
+            }
+            None => {}
+        }
+        room
     }
 
-    fn apply_room(&mut self, room: Room) {
-        for y in 0..room.rect.height {
-            for x in 0..room.rect.width {
-                let map_point = Point::new(room.rect.x + x, room.rect.y + y);
-
-                let tile =
-                    if x == 0 || x == room.rect.width - 1 || y == 0 || y == room.rect.height - 1 {
-                        Tile::new(TileType::Wall)
-                    } else {
-                        Tile::new(TileType::Floor)
-                    };
-
-                self.set(map_point, tile);
-            }
+    fn apply_room(&mut self, room: &DungeonMap) {
+        for (point, tile) in room.iter_tiles() {
+            self.set(point, tile.clone());
         }
     }
 }
@@ -103,10 +108,4 @@ impl DungeonMap {
             .iter_points()
             .filter_map(move |p| self.get(p).map(|tile| (p, tile)))
     }
-}
-
-// Helper room struct
-struct Room {
-    rect: Rect,
-    tile_map: Vec<Tile>,
 }

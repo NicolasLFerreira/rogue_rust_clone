@@ -66,6 +66,16 @@ impl Point {
             })
         }
     }
+
+    pub fn saturating_offset(self, d: Delta) -> Point {
+        let nx = self.x as i32 + d.dx;
+        let ny = self.y as i32 + d.dy;
+
+        Point {
+            x: nx.max(0) as usize,
+            y: ny.max(0) as usize,
+        }
+    }
 }
 
 impl Add<Delta> for Point {

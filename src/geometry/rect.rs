@@ -1,5 +1,6 @@
 use crate::geometry::delta::Delta;
 use crate::geometry::point::Point;
+use rand::Rng;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Rect {
@@ -50,6 +51,33 @@ impl Rect {
             && point.x < self.x + self.width
             && point.y >= self.y
             && point.y < self.y + self.height
+    }
+
+    pub fn pick_edge_point(&self) -> Point {
+        let v = match rand::rng().random_range(0..3) {
+            0 => Point::new(
+                self.x,
+                rand::rng().random_range(self.y..self.y + self.height - 1),
+            ),
+            1 => Point::new(
+                self.x + self.width - 1,
+                rand::rng().random_range(self.y..self.y + self.height - 1),
+            ),
+            2 => Point::new(
+                rand::rng().random_range(self.x..self.x + self.width - 1),
+                self.y,
+            ),
+            3 => Point::new(
+                rand::rng().random_range(self.x..self.x + self.width - 1),
+                self.y + self.height - 1,
+            ),
+            _ => Point::ZERO,
+        };
+
+        dbg!(self);
+        dbg!(v);
+
+        v
     }
 
     pub fn intersect(&self, other: Rect) -> bool {

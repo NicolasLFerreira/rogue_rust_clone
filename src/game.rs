@@ -62,22 +62,34 @@ impl Game {
         // Map
         for (point, tile) in self.dungeon_map.iter_tiles() {
             let tile_type = tile.tile_type;
-            frame.put(
-                point,
-                Cell {
-                    glyph: match tile_type {
-                        TileType::Floor => '.',
-                        TileType::Wall => '#',
-                        TileType::Void => ' ',
+            let visible = tile.visible;
+            if visible {
+                frame.put(
+                    point,
+                    Cell {
+                        glyph: match tile_type {
+                            TileType::Floor => '.',
+                            TileType::Wall => '#',
+                            TileType::Void => ' ',
+                        },
+                        foreground: match tile_type {
+                            TileType::Floor => Color::White,
+                            TileType::Wall => Color::White,
+                            TileType::Void => Color::Black,
+                        },
+                        background: Color::DarkRed,
                     },
-                    foreground: match tile_type {
-                        TileType::Floor => Color::White,
-                        TileType::Wall => Color::White,
-                        TileType::Void => Color::Black,
+                )
+            } else {
+                frame.put(
+                    point,
+                    Cell {
+                        glyph: ' ',
+                        foreground: Color::Black,
+                        background: Color::Black,
                     },
-                    background: Color::DarkRed,
-                },
-            )
+                )
+            }
         }
 
         // Entities
