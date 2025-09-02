@@ -18,7 +18,7 @@ impl PrototypeMapGenerator {
 
 // Code
 impl PrototypeMapGenerator {
-    fn generate_room(&self, rect: Rect) -> TileMap {
+    fn generate_region(&self, rect: Rect) -> TileMap {
         let mut tile_map = Vec::with_capacity(rect.area());
         for y in 0..rect.height {
             for x in 0..rect.width {
@@ -38,17 +38,17 @@ impl PrototypeMapGenerator {
                 tile_map.push(tile);
             }
         }
-        let mut room = TileMap { rect, tile_map };
+        let mut region = TileMap { rect, tile_map };
 
         // Places door
         let door = pick_wall_point(rect);
-        match room.get_mut(door) {
+        match region.get_mut(door) {
             Some(tile) => {
                 tile.tile_type = TileType::Floor;
             }
             None => {}
         }
-        room
+        region
     }
 }
 
@@ -61,10 +61,10 @@ impl MapGenerator for PrototypeMapGenerator {
             dy: ry as i32,
         };
 
-        // Rooms
+        // Regions
         for i in 0..3 {
-            let room = self.generate_room(Rect::new_dimensions(rx, ry).translate(sdf * i));
-            apply_tile_map(map, &room)
+            let region = self.generate_region(Rect::new_dimensions(rx, ry).translate(sdf * i));
+            apply_tile_map(map, &region)
         }
     }
 }
