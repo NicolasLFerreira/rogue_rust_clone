@@ -59,8 +59,7 @@ impl Game {
     }
 
     pub(crate) fn compose(&self, frame: &mut Frame) {
-        // static background (example)
-
+        // Map
         for (point, tile) in self.dungeon_map.iter_tiles() {
             let tile_type = tile.tile_type;
             frame.put(
@@ -76,12 +75,12 @@ impl Game {
                         TileType::Wall => Color::White,
                         TileType::Void => Color::Black,
                     },
-                    background: Color::Black,
+                    background: Color::DarkRed,
                 },
             )
         }
 
-        // entities (z-order: map < entities < ui)
+        // Entities
         for entity in self.entities.iter() {
             frame.put(
                 entity.point,
@@ -99,7 +98,7 @@ impl Game {
             );
         }
 
-        // UI overlay
+        // UI
         frame.put_str(
             Point::new(0, self.dungeon_map.rect.height),
             "q to quit",

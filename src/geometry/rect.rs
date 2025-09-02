@@ -12,7 +12,7 @@ pub struct Rect {
 // Constructors
 impl Rect {
     pub fn new(x: usize, y: usize, width: usize, height: usize) -> Self {
-        Self {
+        Rect {
             x,
             y,
             width,
@@ -20,8 +20,17 @@ impl Rect {
         }
     }
 
+    pub fn new_dimensions(width: usize, height: usize) -> Self {
+        Rect {
+            x: 0,
+            y: 0,
+            width,
+            height,
+        }
+    }
+
     pub fn empty() -> Self {
-        Self {
+        Rect {
             x: 0,
             y: 0,
             width: 0,
@@ -37,7 +46,10 @@ impl Rect {
     }
 
     pub fn contains(&self, point: Point) -> bool {
-        point.x > self.x && point.x < self.width && point.y > self.y && point.y < self.height
+        point.x >= self.x
+            && point.x < self.x + self.width
+            && point.y >= self.y
+            && point.y < self.y + self.height
     }
 
     pub fn intersect(&self, other: Rect) -> bool {

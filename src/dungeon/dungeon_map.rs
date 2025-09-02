@@ -1,30 +1,42 @@
+use crate::dungeon::tile::TileType;
 use crate::dungeon::tile::*;
+use crate::geometry::delta::Delta;
 use crate::geometry::point::Point;
 use crate::geometry::rect::Rect;
+use std::ops::Mul;
 
 pub struct DungeonMap {
     pub rect: Rect,
     tile_map: Vec<Tile>,
 }
 
+// Constructor
 impl DungeonMap {
     pub fn new(rect: Rect) -> DungeonMap {
-        let tile_map: Vec<Tile> = vec![Tile::empty(); rect.area()];
+        let mut tile_map: Vec<Tile> = vec![Tile::new(TileType::Floor); rect.area()];
+        tile_map[0] = Tile::new(TileType::Wall);
         DungeonMap { rect, tile_map }
     }
+}
 
+// Generation
+impl DungeonMap {
     pub fn generate_map(&mut self) {
-        let room_rect = Rect {
-            x: (self.rect.height / 3) - 3,
-            y: (self.rect.width / 3) - 3,
-            height: self.rect.height / 3,
-            width: self.rect.width / 3,
+        let rx = self.rect.width / 3;
+        let ry = self.rect.height / 3;
+        let sdf = Delta {
+            dx: rx as i32,
+            dy: ry as i32,
         };
-        let room = Self::generate_room(room_rect);
-        self.apply_room(room);
+
+        // Room 1
+        for i in 0..3 {
+            let room = self.generate_room(Rect::new_dimensions(rx, ry).translate(sdf.mul(i)));
+            self.apply_room(room)
+        }
     }
 
-    fn generate_room(rect: Rect) -> Room {
+    fn generate_room(&self, rect: Rect) -> Room {
         let mut tile_map = Vec::with_capacity(rect.area());
         for y in 0..rect.height {
             for x in 0..rect.width {
@@ -55,7 +67,10 @@ impl DungeonMap {
             }
         }
     }
+}
 
+// Other
+impl DungeonMap {
     // row major
     fn index(&self, point: Point) -> Option<usize> {
         if self.rect.contains(point) {
@@ -90,6 +105,7 @@ impl DungeonMap {
     }
 }
 
+// Helper room struct
 struct Room {
     rect: Rect,
     tile_map: Vec<Tile>,

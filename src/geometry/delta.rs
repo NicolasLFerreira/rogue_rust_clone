@@ -10,6 +10,8 @@ pub struct Delta {
 
 // Constructor
 impl Delta {
+    pub const ZERO: Delta = Delta { dx: 0, dy: 0 };
+
     pub fn new(dx: i32, dy: i32) -> Self {
         Self { dx, dy }
     }

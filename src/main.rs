@@ -21,11 +21,8 @@ const FPS: u64 = 30;
 const FRAME_DURATION: Duration = Duration::from_millis(1000 / FPS);
 
 fn main() -> io::Result<()> {
-
-
-
-    let screen_rect: Rect = Rect::new(0, 0, 60, 21);
-    let map_rect: Rect = Rect::new(0, 0, 40, 20);
+    let screen_rect: Rect = Rect::new(0, 0, 61, 22);
+    let map_rect: Rect = Rect::new(0, 0, 60, 21);
 
     // Initialise renderer and game
     let mut renderer = CrosstermRenderer::new(screen_rect);
