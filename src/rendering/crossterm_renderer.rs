@@ -26,7 +26,7 @@ impl CrosstermRenderer {
 
 impl Renderer for CrosstermRenderer {
     fn present(&mut self, frame: &Frame) -> std::io::Result<()> {
-        // Diff current frame against prev; update only changed cells
+        // Diff current frame against prev, Update only changed cells
         let width = frame.rect.width;
         let height = frame.rect.height;
 
