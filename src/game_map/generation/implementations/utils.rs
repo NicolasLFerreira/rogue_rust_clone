@@ -3,9 +3,6 @@ use crate::geometry::point::Point;
 use crate::geometry::rect::Rect;
 use rand::Rng;
 
-// Contextual representation of a region inside a tile map
-pub(super) type Region = Rect;
-
 // Picks a point in one of the walls
 pub(super) fn pick_wall_point(rect: Rect) -> Point {
     match rand::rng().random_range(0..4) {

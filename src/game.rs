@@ -1,6 +1,5 @@
 use crate::entities::entity::{Entity, EntityType};
 use crate::game_map::generation::implementations::dungeon_map_generator::DungeonMapGenerator;
-use crate::game_map::generation::implementations::prototype_map_generator::PrototypeMapGenerator;
 use crate::game_map::generation::map_generator::MapGenerator;
 use crate::game_map::tile::*;
 use crate::game_map::tile_map::*;
@@ -23,7 +22,6 @@ impl Game {
         let mut tile_map = TileMap::new(rect);
 
         // Generation
-        let generator: Box<dyn MapGenerator> = Box::new(PrototypeMapGenerator::new(rect));
         let mut generator: Box<dyn MapGenerator> = Box::new(DungeonMapGenerator::new(rect));
         generator.generate_map(&mut tile_map);
 
