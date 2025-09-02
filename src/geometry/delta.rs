@@ -8,13 +8,60 @@ pub struct Delta {
     pub dy: i32,
 }
 
+// Constructor
 impl Delta {
     pub fn new(dx: i32, dy: i32) -> Self {
         Self { dx, dy }
     }
+}
 
+// Queries
+impl Delta {
+    #[inline]
     pub fn is_zero(&self) -> bool {
         self.dx == 0 && self.dy == 0
+    }
+
+    #[inline]
+    pub fn to_direction(&self) -> Direction {
+        let normalized = self.normalize();
+        match (normalized.dx, normalized.dy) {
+            (0, -1) => Direction::North,
+            (0, 1) => Direction::South,
+            (-1, 0) => Direction::West,
+            (1, 0) => Direction::East,
+            (-1, -1) => Direction::NorthWest,
+            (1, -1) => Direction::NorthEast,
+            (-1, 1) => Direction::SouthWest,
+            (1, 1) => Direction::SouthEast,
+            (0, 0) | _ => Direction::Center,
+        }
+    }
+}
+
+// Transformation
+impl Delta {
+    #[inline]
+    pub fn scale(self, factor: f64) -> Delta {
+        Delta {
+            dx: (self.dx as f64 * factor).round() as i32,
+            dy: (self.dy as f64 * factor).round() as i32,
+        }
+    }
+
+    #[inline]
+    pub fn normalize(self) -> Delta {
+        let dx = if self.dx == 0 {
+            0
+        } else {
+            self.dx / self.dx.abs()
+        };
+        let dy = if self.dy == 0 {
+            0
+        } else {
+            self.dy / self.dy.abs()
+        };
+        Delta { dx, dy }
     }
 }
 
@@ -63,15 +110,6 @@ impl From<Point> for Delta {
         Delta {
             dx: value.x as i32,
             dy: value.y as i32,
-        }
-    }
-}
-
-impl From<Delta> for Point {
-    fn from(value: Delta) -> Self {
-        Point {
-            x: value.dx as usize,
-            y: value.dy as usize,
         }
     }
 }

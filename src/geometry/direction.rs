@@ -1,6 +1,7 @@
 use crate::geometry::delta::Delta;
 
 pub enum Direction {
+    Center,
     North,
     South,
     West,
@@ -12,7 +13,8 @@ pub enum Direction {
 }
 
 impl Direction {
-    pub const ALL: [Direction; 8] = [
+    pub const ALL: [Direction; 9] = [
+        Direction::Center,
         Direction::North,
         Direction::South,
         Direction::West,
@@ -25,6 +27,7 @@ impl Direction {
 
     pub fn to_delta(self) -> Delta {
         match self {
+            Direction::Center => Delta::new(0, 0),
             Direction::North => Delta::new(0, -1),
             Direction::South => Delta::new(0, 1),
             Direction::West => Delta::new(-1, 0),
