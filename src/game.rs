@@ -1,5 +1,6 @@
 use crate::dungeon::dungeon_map::*;
-use crate::dungeon::dungeon_map_generator::DungeonMapGenerator;
+use crate::dungeon::generation::dungeon_map_generator::DungeonMapGenerator;
+use crate::dungeon::generation::map_generator::MapGenerator;
 use crate::dungeon::tile::*;
 use crate::entities::entity::{Entity, EntityType};
 use crate::geometry::direction::Direction;
@@ -19,12 +20,12 @@ impl Game {
     pub fn new(rect: Rect) -> Self {
         // Map
         let mut dungeon_map = DungeonMap::new(rect);
-        let generator = DungeonMapGenerator::new(rect);
+        let generator: Box<dyn MapGenerator> = Box::new(DungeonMapGenerator::new(rect));
         generator.generate_map(&mut dungeon_map);
 
         // Entities
         let player: Entity = Entity::new(dungeon_map.rnd_floor_point(), EntityType::Player);
-        let mut entities = vec![player];
+        let entities = vec![player];
         // entities.push(Entity::new(Point::new(5, 5), EntityType::Enemy));
 
         Self {

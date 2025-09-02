@@ -1,4 +1,5 @@
 use crate::dungeon::dungeon_map::DungeonMap;
+use crate::dungeon::generation::map_generator::MapGenerator;
 use crate::dungeon::tile::{Tile, TileType};
 use crate::geometry::delta::Delta;
 use crate::geometry::rect::Rect;
@@ -14,23 +15,7 @@ impl DungeonMapGenerator {
     }
 }
 
-// Generation
 impl DungeonMapGenerator {
-    pub fn generate_map(&self, map: &mut DungeonMap) {
-        let rx = self.rect.width / 3;
-        let ry = self.rect.height / 3;
-        let sdf = Delta {
-            dx: rx as i32,
-            dy: ry as i32,
-        };
-
-        // Rooms
-        for i in 0..3 {
-            let room = self.generate_room(Rect::new_dimensions(rx, ry).translate(sdf * i));
-            self.apply_room(map, &room)
-        }
-    }
-
     fn generate_room(&self, rect: Rect) -> DungeonMap {
         let mut tile_map = Vec::with_capacity(rect.area());
         for y in 0..rect.height {
@@ -69,4 +54,25 @@ impl DungeonMapGenerator {
             map.set(point, tile.clone());
         }
     }
+}
+
+impl MapGenerator for DungeonMapGenerator {
+    fn generate_map(&self, map: &mut DungeonMap) {
+        let rx = self.rect.width / 3;
+        let ry = self.rect.height / 3;
+        let sdf = Delta {
+            dx: rx as i32,
+            dy: ry as i32,
+        };
+
+        // Rooms
+        for i in 0..3 {
+            let room = self.generate_room(Rect::new_dimensions(rx, ry).translate(sdf * i));
+            self.apply_room(map, &room)
+        }
+    }
+}
+
+struct Room {
+    pub rect: Rect,
 }
