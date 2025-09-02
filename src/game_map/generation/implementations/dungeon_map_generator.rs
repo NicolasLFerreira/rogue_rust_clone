@@ -1,4 +1,4 @@
-use crate::game_map::generation::implementations::utils::apply_tile_map;
+use crate::game_map::generation::implementations::utils::{apply_tile_map, pick_wall_point};
 use crate::game_map::generation::map_generator::MapGenerator;
 use crate::game_map::tile::{Tile, TileType};
 use crate::game_map::tile_map::TileMap;
@@ -7,7 +7,6 @@ use crate::geometry::point::Point;
 use crate::geometry::rect::Rect;
 use rand::Rng;
 use rand::rngs::ThreadRng;
-use std::collections::HashMap;
 
 pub struct DungeonMapGenerator {
     rect: Rect,
@@ -43,8 +42,8 @@ impl MapGenerator for DungeonMapGenerator {
 // Generation
 impl DungeonMapGenerator {
     fn create_room(&mut self, rect: Rect) -> Rect {
-        let width = self.rng.random_range(4..12);
-        let height = self.rng.random_range(4..12);
+        let width = self.rng.random_range(4..rect.width - 2);
+        let height = self.rng.random_range(4..rect.height - 2);
         let anchor = Point::new(
             self.rng.random_range(rect.x..rect.x + rect.width - width),
             self.rng.random_range(rect.y..rect.y + rect.height - height),
@@ -66,11 +65,15 @@ impl DungeonMapGenerator {
             }
         }
 
-        let tm = TileMap {
+        let mut new_tile_map = TileMap {
             tile_map: vec_t,
             rect: room,
         };
 
-        apply_tile_map(tile_map, &tm);
+        // Places door
+        let door_point = pick_wall_point(room);
+        new_tile_map.set(door_point, Tile::new(TileType::Floor));
+
+        apply_tile_map(tile_map, &new_tile_map);
     }
 }
