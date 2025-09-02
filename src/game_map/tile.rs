@@ -1,8 +1,8 @@
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum TileType {
+    Void,
     Floor,
     Wall,
-    Void,
 }
 
 #[derive(Copy, Clone, Debug)]

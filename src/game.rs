@@ -57,7 +57,7 @@ impl Game {
     fn open_tile(&self, point: Point) -> bool {
         self.dungeon_map
             .get(point)
-            .map(|tile| tile.tile_type == TileType::Floor)
+            .map(|tile| tile.is_walkable())
             .unwrap_or(false)
     }
 
