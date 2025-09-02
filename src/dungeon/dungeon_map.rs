@@ -1,13 +1,11 @@
 use crate::dungeon::tile::TileType;
 use crate::dungeon::tile::*;
-use crate::geometry::delta::Delta;
 use crate::geometry::point::Point;
 use crate::geometry::rect::Rect;
-use std::ops::Mul;
 
 pub struct DungeonMap {
     pub rect: Rect,
-    tile_map: Vec<Tile>,
+    pub(crate) tile_map: Vec<Tile>,
 }
 
 // Constructor
@@ -20,61 +18,7 @@ impl DungeonMap {
 }
 
 // Generation
-impl DungeonMap {
-    pub fn generate_map(&mut self) {
-        let rx = self.rect.width / 3;
-        let ry = self.rect.height / 3;
-        let sdf = Delta {
-            dx: rx as i32,
-            dy: ry as i32,
-        };
-
-        // Rooms
-        for i in 0..3 {
-            let room = self.generate_room(Rect::new_dimensions(rx, ry).translate(sdf.mul(i)));
-            self.apply_room(&room)
-        }
-    }
-
-    fn generate_room(&self, rect: Rect) -> DungeonMap {
-        let mut tile_map = Vec::with_capacity(rect.area());
-        for y in 0..rect.height {
-            for x in 0..rect.width {
-                let tile = if x == 0 || x == rect.width - 1 || y == 0 || y == rect.height - 1 {
-                    Tile {
-                        tile_type: TileType::Wall,
-                        visible: true,
-                        revealed: true,
-                    }
-                } else {
-                    Tile {
-                        tile_type: TileType::Floor,
-                        visible: true,
-                        revealed: true,
-                    }
-                };
-                tile_map.push(tile);
-            }
-        }
-        let mut room = DungeonMap { rect, tile_map };
-
-        // Places door
-        let door = rect.pick_edge_point();
-        match room.get_mut(door) {
-            Some(tile) => {
-                tile.tile_type = TileType::Floor;
-            }
-            None => {}
-        }
-        room
-    }
-
-    fn apply_room(&mut self, room: &DungeonMap) {
-        for (point, tile) in room.iter_tiles() {
-            self.set(point, tile.clone());
-        }
-    }
-}
+impl DungeonMap {}
 
 // Other
 impl DungeonMap {
