@@ -2,7 +2,6 @@ use crate::dungeon::dungeon_map::DungeonMap;
 use crate::dungeon::tile::{Tile, TileType};
 use crate::geometry::delta::Delta;
 use crate::geometry::rect::Rect;
-use std::ops::Mul;
 
 pub struct DungeonMapGenerator {
     rect: Rect,
@@ -27,7 +26,7 @@ impl DungeonMapGenerator {
 
         // Rooms
         for i in 0..3 {
-            let room = self.generate_room(Rect::new_dimensions(rx, ry).translate(sdf.mul(i)));
+            let room = self.generate_room(Rect::new_dimensions(rx, ry).translate(sdf * i));
             self.apply_room(map, &room)
         }
     }
