@@ -1,6 +1,5 @@
 use crate::geometry::delta::Delta;
 use crate::geometry::point::Point;
-use rand::Rng;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Rect {
@@ -12,10 +11,26 @@ pub struct Rect {
 
 // Constructors
 impl Rect {
+    pub const EMPTY: Rect = Rect {
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0,
+    };
+
     pub fn new(x: usize, y: usize, width: usize, height: usize) -> Self {
         Rect {
             x,
             y,
+            width,
+            height,
+        }
+    }
+
+    pub fn new_anchor(anchor: Point, width: usize, height: usize) -> Self {
+        Rect {
+            x: anchor.x,
+            y: anchor.y,
             width,
             height,
         }
@@ -27,15 +42,6 @@ impl Rect {
             y: 0,
             width,
             height,
-        }
-    }
-
-    pub fn empty() -> Self {
-        Rect {
-            x: 0,
-            y: 0,
-            width: 0,
-            height: 0,
         }
     }
 }

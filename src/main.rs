@@ -1,4 +1,4 @@
-mod dungeon;
+mod game_map;
 mod entities;
 mod game;
 mod geometry;
@@ -14,7 +14,6 @@ use crate::rendering::frame::Frame;
 use crate::rendering::renderer::Renderer;
 use input::input_handler::get_input;
 use std::io;
-use std::io::Write;
 use std::thread::sleep;
 use std::time::{Duration, Instant};
 

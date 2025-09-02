@@ -1,27 +1,27 @@
-use crate::dungeon::tile::TileType;
-use crate::dungeon::tile::*;
+use crate::game_map::tile::TileType;
+use crate::game_map::tile::*;
 use crate::geometry::point::Point;
 use crate::geometry::rect::Rect;
 
-pub struct DungeonMap {
+pub struct TileMap {
     pub rect: Rect,
     pub(crate) tile_map: Vec<Tile>,
 }
 
 // Constructor
-impl DungeonMap {
-    pub fn new(rect: Rect) -> DungeonMap {
+impl TileMap {
+    pub fn new(rect: Rect) -> TileMap {
         let mut tile_map: Vec<Tile> = vec![Tile::empty(); rect.area()];
         tile_map[0] = Tile::new(TileType::Wall);
-        DungeonMap { rect, tile_map }
+        TileMap { rect, tile_map }
     }
 }
 
 // Generation
-impl DungeonMap {}
+impl TileMap {}
 
 // Other
-impl DungeonMap {
+impl TileMap {
     fn index(&self, point: Point) -> Option<usize> {
         if self.rect.contains(point) {
             Some((point.y - self.rect.y) * self.rect.width + (point.x - self.rect.x))

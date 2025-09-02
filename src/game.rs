@@ -1,8 +1,8 @@
-use crate::dungeon::dungeon_map::*;
-use crate::dungeon::generation::dungeon_map_generator::DungeonMapGenerator;
-use crate::dungeon::generation::map_generator::MapGenerator;
-use crate::dungeon::tile::*;
 use crate::entities::entity::{Entity, EntityType};
+use crate::game_map::generation::implementations::prototype_map_generator::PrototypeMapGenerator;
+use crate::game_map::generation::map_generator::MapGenerator;
+use crate::game_map::tile::*;
+use crate::game_map::tile_map::*;
 use crate::geometry::direction::Direction;
 use crate::geometry::point::Point;
 use crate::geometry::rect::Rect;
@@ -11,7 +11,7 @@ use crate::rendering::frame::Frame;
 use crossterm::style::Color;
 
 pub struct Game {
-    pub dungeon_map: DungeonMap,
+    pub dungeon_map: TileMap,
     pub entities: Vec<Entity>,
     pub player_idx: usize,
 }
@@ -19,17 +19,17 @@ pub struct Game {
 impl Game {
     pub fn new(rect: Rect) -> Self {
         // Map
-        let mut dungeon_map = DungeonMap::new(rect);
-        let generator: Box<dyn MapGenerator> = Box::new(DungeonMapGenerator::new(rect));
-        generator.generate_map(&mut dungeon_map);
+        let mut tile_map = TileMap::new(rect);
+        let generator: Box<dyn MapGenerator> = Box::new(PrototypeMapGenerator::new(rect));
+        generator.generate_map(&mut tile_map);
 
         // Entities
-        let player: Entity = Entity::new(dungeon_map.rnd_floor_point(), EntityType::Player);
+        let player: Entity = Entity::new(tile_map.rnd_floor_point(), EntityType::Player);
         let entities = vec![player];
         // entities.push(Entity::new(Point::new(5, 5), EntityType::Enemy));
 
         Self {
-            dungeon_map,
+            dungeon_map: tile_map,
             entities,
             player_idx: 0,
         }

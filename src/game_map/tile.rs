@@ -1,5 +1,3 @@
-use std::fmt::Display;
-
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum TileType {
     Floor,
