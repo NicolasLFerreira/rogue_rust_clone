@@ -53,28 +53,6 @@ impl Rect {
             && point.y < self.y + self.height
     }
 
-    pub fn pick_edge_point(&self) -> Point {
-        match rand::rng().random_range(0..4) {
-            0 => Point::new(
-                self.x,
-                rand::rng().random_range(self.y..self.y + self.height),
-            ),
-            1 => Point::new(
-                self.x + self.width - 1,
-                rand::rng().random_range(self.y..self.y + self.height),
-            ),
-            2 => Point::new(
-                rand::rng().random_range(self.x..self.x + self.width),
-                self.y,
-            ),
-            3 => Point::new(
-                rand::rng().random_range(self.x..self.x + self.width),
-                self.y + self.height - 1,
-            ),
-            _ => Point::ZERO,
-        }
-    }
-
     pub fn intersect(&self, other: Rect) -> bool {
         self.x < other.x + other.width
             && other.x < self.x + self.width

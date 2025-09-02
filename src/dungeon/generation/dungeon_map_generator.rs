@@ -2,7 +2,9 @@ use crate::dungeon::dungeon_map::DungeonMap;
 use crate::dungeon::generation::map_generator::MapGenerator;
 use crate::dungeon::tile::{Tile, TileType};
 use crate::geometry::delta::Delta;
+use crate::geometry::point::Point;
 use crate::geometry::rect::Rect;
+use rand::Rng;
 
 pub struct DungeonMapGenerator {
     rect: Rect,
@@ -15,6 +17,7 @@ impl DungeonMapGenerator {
     }
 }
 
+// Code
 impl DungeonMapGenerator {
     fn generate_room(&self, rect: Rect) -> DungeonMap {
         let mut tile_map = Vec::with_capacity(rect.area());
@@ -39,7 +42,7 @@ impl DungeonMapGenerator {
         let mut room = DungeonMap { rect, tile_map };
 
         // Places door
-        let door = rect.pick_edge_point();
+        let door = Self::pick_wall_point(rect);
         match room.get_mut(door) {
             Some(tile) => {
                 tile.tile_type = TileType::Floor;
@@ -52,6 +55,28 @@ impl DungeonMapGenerator {
     fn apply_room(&self, map: &mut DungeonMap, room: &DungeonMap) {
         for (point, tile) in room.iter_tiles() {
             map.set(point, tile.clone());
+        }
+    }
+
+    fn pick_wall_point(rect: Rect) -> Point {
+        match rand::rng().random_range(0..4) {
+            0 => Point::new(
+                rect.x,
+                rand::rng().random_range(rect.y..rect.y + rect.height),
+            ),
+            1 => Point::new(
+                rect.x + rect.width - 1,
+                rand::rng().random_range(rect.y..rect.y + rect.height),
+            ),
+            2 => Point::new(
+                rand::rng().random_range(rect.x..rect.x + rect.width),
+                rect.y,
+            ),
+            3 => Point::new(
+                rand::rng().random_range(rect.x..rect.x + rect.width),
+                rect.y + rect.height - 1,
+            ),
+            _ => Point::ZERO,
         }
     }
 }
@@ -71,8 +96,4 @@ impl MapGenerator for DungeonMapGenerator {
             self.apply_room(map, &room)
         }
     }
-}
-
-struct Room {
-    pub rect: Rect,
 }
