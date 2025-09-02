@@ -7,13 +7,52 @@ pub struct Point {
     pub y: usize,
 }
 
+// Constructor
 impl Point {
     pub const ZERO: Point = Point { x: 0, y: 0 };
 
     pub fn new(x: usize, y: usize) -> Self {
-        Self { x, y }
+        Point { x, y }
+    }
+}
+
+// Queries
+impl Point {
+    pub fn distance(&self, other: &Point) -> f64 {
+        let dx = (self.x - other.x) as f64;
+        let dy = (self.y - other.y) as f64;
+        (dx * dx + dy * dy).sqrt()
     }
 
+    pub fn manhattan_distance(&self, other: &Point) -> usize {
+        (self.x as isize - other.x as isize).abs() as usize
+            + (self.y as isize - other.y as isize).abs() as usize
+    }
+
+    pub fn neighbors(&self) -> [Point; 4] {
+        [
+            Point {
+                x: self.x + 1,
+                y: self.y,
+            },
+            Point {
+                x: self.x.saturating_sub(1),
+                y: self.y,
+            },
+            Point {
+                x: self.x,
+                y: self.y + 1,
+            },
+            Point {
+                x: self.x,
+                y: self.y.saturating_sub(1),
+            },
+        ]
+    }
+}
+
+// Transformations
+impl Point {
     pub fn offset(self, d: Delta) -> Option<Point> {
         let nx = self.x as i32 + d.dx;
         let ny = self.y as i32 + d.dy;
@@ -27,46 +66,15 @@ impl Point {
             })
         }
     }
-
-    pub fn distance(&self, other: &Point) -> f64 {
-        let dx = (self.x - other.x) as f64;
-        let dy = (self.y - other.y) as f64;
-        (dx * dx + dy * dy).sqrt()
-    }
-
-    pub fn manhattan_distance(&self, other: &Point) -> usize {
-        self.x - other.x + self.y - other.y
-    }
-
-    pub fn neighbors(&self) -> [Point; 4] {
-        [
-            Point {
-                x: self.x + 1,
-                y: self.y,
-            },
-            Point {
-                x: self.x - 1,
-                y: self.y,
-            },
-            Point {
-                x: self.x,
-                y: self.y + 1,
-            },
-            Point {
-                x: self.x,
-                y: self.y - 1,
-            },
-        ]
-    }
 }
 
-impl Add for Point {
+impl Add<Delta> for Point {
     type Output = Point;
 
-    fn add(self, rhs: Point) -> Self::Output {
+    fn add(self, rhs: Delta) -> Self::Output {
         Point {
-            x: self.x + rhs.x,
-            y: self.y + rhs.y,
+            x: (self.x as i32 + rhs.dx).max(0) as usize,
+            y: (self.y as i32 + rhs.dy).max(0) as usize,
         }
     }
 }
