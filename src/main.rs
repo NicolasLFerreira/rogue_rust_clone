@@ -29,7 +29,7 @@ fn main() -> io::Result<()> {
     let map_rect: Rect = Rect::new_dimensions(base.dx as usize, base.dy as usize);
 
     // Renderer instance remains the same for the program's entire lifetime
-    let mut renderer: dyn Renderer = CrosstermRenderer::new(screen_rect);
+    let mut renderer: Box<dyn Renderer> = Box::new(CrosstermRenderer::new(screen_rect));
 
     'master: loop {
         // Game instance is reset in-between games.
