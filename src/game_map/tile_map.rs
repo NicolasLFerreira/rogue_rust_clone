@@ -11,9 +11,10 @@ pub struct TileMap {
 // Constructor
 impl TileMap {
     pub fn new(rect: Rect) -> TileMap {
-        let mut tile_map: Vec<Tile> = vec![Tile::empty(); rect.area()];
-        tile_map[0] = Tile::new(TileType::Wall);
-        TileMap { rect, tile_map }
+        TileMap {
+            rect,
+            tile_map: vec![Tile::empty(); rect.area()],
+        }
     }
 }
 

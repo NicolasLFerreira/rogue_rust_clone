@@ -16,8 +16,8 @@ impl Tile {
     pub fn new(tile_type: TileType) -> Self {
         Self {
             tile_type,
-            revealed: false,
-            visible: false,
+            revealed: true,
+            visible: true,
         }
     }
 

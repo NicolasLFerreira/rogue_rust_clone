@@ -4,10 +4,7 @@ use crate::geometry::rect::Rect;
 use rand::Rng;
 
 // Contextual representation of a region inside a tile map
-#[derive(Copy, Clone)]
-pub(super) struct Region {
-    pub rect: Rect,
-}
+pub(super) type Region = Rect;
 
 // Picks a point in one of the walls
 pub(super) fn pick_wall_point(rect: Rect) -> Point {

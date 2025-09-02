@@ -53,7 +53,7 @@ impl PrototypeMapGenerator {
 }
 
 impl MapGenerator for PrototypeMapGenerator {
-    fn generate_map(&self, map: &mut TileMap) {
+    fn generate_map(&mut self, map: &mut TileMap) {
         let rx = self.rect.width / 3;
         let ry = self.rect.height / 3;
         let sdf = Delta {
