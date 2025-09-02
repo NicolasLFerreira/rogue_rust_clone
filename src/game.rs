@@ -77,10 +77,12 @@ impl Game {
                             TileType::Wall => Color::White,
                             TileType::Void => Color::Black,
                         },
-                        background: Color::DarkRed,
+                        background: Color::Black,
                     },
                 )
-            } else {
+            }
+            // Undiscovered tiles
+            else {
                 frame.put(
                     point,
                     Cell {

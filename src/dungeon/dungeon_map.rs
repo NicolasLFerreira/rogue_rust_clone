@@ -29,7 +29,7 @@ impl DungeonMap {
             dy: ry as i32,
         };
 
-        // Room 1
+        // Rooms
         for i in 0..3 {
             let room = self.generate_room(Rect::new_dimensions(rx, ry).translate(sdf.mul(i)));
             self.apply_room(&room)
@@ -57,10 +57,12 @@ impl DungeonMap {
             }
         }
         let mut room = DungeonMap { rect, tile_map };
+
+        // Places door
         let door = rect.pick_edge_point();
         match room.get_mut(door) {
             Some(tile) => {
-                tile.visible = false;
+                tile.tile_type = TileType::Floor;
             }
             None => {}
         }
