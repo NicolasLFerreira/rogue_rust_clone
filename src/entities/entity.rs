@@ -5,6 +5,7 @@ pub enum EntityKind {
     Enemy,
 }
 
+#[derive(Clone)]
 pub struct Stats {
     pub max_hp: i32,
     pub cur_hp: i32,
@@ -30,19 +31,17 @@ pub struct Entity {
 
 // Constructor
 impl Entity {
-    pub const EMPTY: Self = Entity {
-        id: 0,
-        point: Point::ZERO,
-        stats: Stats::EMPTY,
-        kind: EntityKind::Enemy,
-    };
-
     pub fn new(id: usize, point: Point, kind: EntityKind) -> Self {
         Self {
             id,
             point,
             kind,
-            stats: Stats::EMPTY,
+            stats: Stats {
+                max_hp: 20,
+                cur_hp: 20,
+                atk: 5,
+                def: 5,
+            },
         }
     }
 }

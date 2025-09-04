@@ -8,14 +8,14 @@ use crate::types::Id;
 pub enum MoveEvent {
     Pass,
     Invalid,
-    Occupied(Id),
+    Occupied(Id, Id),
 }
 
 pub struct MovementSystem;
 
 impl MovementSystem {
-    pub fn try_move(game: &mut Game, entity_id: Id, direction: Direction) -> MoveEvent {
-        let new_point = match game.entity_manager.get_entity(entity_id) {
+    pub fn try_move(game: &mut Game, mover_id: Id, direction: Direction) -> MoveEvent {
+        let new_point = match game.entity_manager.get_entity(mover_id) {
             Some(entity) => match entity.point.offset(direction.to_delta()) {
                 Some(p) => p,
                 None => return MoveEvent::Invalid,
@@ -27,11 +27,11 @@ impl MovementSystem {
             return MoveEvent::Invalid;
         }
 
-        if let Some(id) = Self::is_occupied(&game.entity_manager, new_point) {
-            return MoveEvent::Occupied(id);
+        if let Some(occupant_id) = Self::is_occupied(&game.entity_manager, new_point) {
+            return MoveEvent::Occupied(mover_id, occupant_id);
         }
 
-        if let Some(entity) = game.entity_manager.get_entity_mut(entity_id) {
+        if let Some(entity) = game.entity_manager.get_entity_mut(mover_id) {
             entity.point = new_point;
             MoveEvent::Pass
         } else {

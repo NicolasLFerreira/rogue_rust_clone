@@ -73,7 +73,9 @@ fn main() -> io::Result<()> {
                     Action::Move(move_action) => {
                         let player_id = game.entity_manager.player_id();
                         match MovementSystem::try_move(&mut game, player_id, move_action) {
-                            MoveEvent::Occupied(id) => game.entity_manager.despawn(id),
+                            MoveEvent::Occupied(mover_id, occupant_id) => {
+                                Combat::initiate(&mut game, mover_id, occupant_id)
+                            }
                             _ => {}
                         }
                     }
