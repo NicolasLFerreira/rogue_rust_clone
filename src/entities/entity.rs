@@ -34,18 +34,3 @@ impl Entity {
         }
     }
 }
-
-// Movement
-impl Entity {
-    pub fn move_by(&mut self, delta: Delta) {
-        self.point.offset(delta);
-    }
-}
-
-// Combat
-impl Entity {
-    pub fn take_damage(&mut self, dmg: i32) -> bool {
-        self.stats.cur_hp -= dmg;
-        if self.stats.cur_hp <= 0 { true } else { false }
-    }
-}
