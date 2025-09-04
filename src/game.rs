@@ -3,14 +3,12 @@ use crate::entities::entity_manager::EntityManager;
 use crate::game_map::generation::generators::dungeon_map_generator::DungeonMapGenerator;
 use crate::game_map::generation::map_generator::MapGenerator;
 use crate::game_map::tile_map::*;
-use crate::geometry::direction::Direction;
 use crate::geometry::point::Point;
 use crate::geometry::rect::Rect;
 
 pub struct Game {
     pub tile_map: TileMap,
     pub entity_manager: EntityManager,
-    pub player_idx: usize,
 }
 
 impl Game {
@@ -30,23 +28,6 @@ impl Game {
         Self {
             tile_map,
             entity_manager,
-            player_idx: 0,
         }
-    }
-
-    pub(crate) fn move_player(&mut self, key: Direction) {
-        let delta = key.to_delta();
-        if let Some(new_point) = self.entity_manager.get_player().point.offset(delta) {
-            if self.can_move_to_tile(new_point) {
-                self.entity_manager.get_player_mut().point = new_point;
-            }
-        }
-    }
-
-    fn can_move_to_tile(&self, point: Point) -> bool {
-        self.tile_map
-            .safe_get(point)
-            .map(|tile| tile.is_walkable())
-            .unwrap_or(false)
     }
 }

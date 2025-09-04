@@ -5,6 +5,7 @@ pub struct EntityManager {
     player_idx: usize,
 }
 
+// Constructor
 impl EntityManager {
     pub fn new(player: Entity) -> Self {
         Self {
@@ -26,6 +27,14 @@ impl EntityManager {
 
     pub fn get_player_mut(&mut self) -> &mut Entity {
         &mut self.entities[self.player_idx]
+    }
+
+    pub fn get_entity(&self, id: usize) -> &Entity {
+        &self.entities[id]
+    }
+
+    pub fn get_entity_mut(&mut self, id: usize) -> &mut Entity {
+        &mut self.entities[id]
     }
 
     pub fn iter(&self) -> impl Iterator<Item = &Entity> {

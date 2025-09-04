@@ -4,6 +4,7 @@ mod game_map;
 mod geometry;
 mod graphics;
 mod input;
+mod systems;
 
 use crate::game::Game;
 use crate::geometry::rect::Rect;
@@ -12,6 +13,7 @@ use crate::graphics::rendering::frame::Frame;
 use crate::graphics::rendering::renderers::crossterm_renderer::CrosstermRenderer;
 use crate::graphics::theme::AsciiTheme;
 use crate::input::action::*;
+use crate::systems::movement::MovementSystem;
 use input::input_handler::get_input;
 use std::io;
 use std::thread::sleep;
@@ -66,7 +68,9 @@ fn main() -> io::Result<()> {
             // Pattern matches action categories to their respective handlers
             for action in actions {
                 match action {
-                    Action::Move(move_action) => game.move_player(move_action),
+                    Action::Move(move_action) => {
+                        MovementSystem::try_move(&mut game, 0, move_action)
+                    }
                     Action::Meta(meta_action) => match meta_action {
                         MetaAction::Quit => break 'master,
                         MetaAction::Restart => break 'game,
