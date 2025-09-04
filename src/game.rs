@@ -23,7 +23,7 @@ impl Game {
         // Entities
         let player = Entity::new(tile_map.rnd_floor_point(), EntityKind::Player);
         let mut entity_manager = EntityManager::new(player);
-        entity_manager.add(Entity::new(Point::new(5, 5), EntityKind::Enemy));
+        entity_manager.spawn(Entity::new(Point::new(5, 5), EntityKind::Enemy));
 
         Self {
             tile_map,

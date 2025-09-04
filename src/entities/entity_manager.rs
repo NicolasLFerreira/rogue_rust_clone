@@ -1,47 +1,53 @@
 use crate::entities::entity::Entity;
+use std::collections::HashMap;
 
 pub struct EntityManager {
-    entities: Vec<Entity>,
+    entities: HashMap<usize, Entity>,
     player_idx: usize,
+    entity_id_counter: usize,
 }
 
 // Constructor
 impl EntityManager {
     pub fn new(player: Entity) -> Self {
+        let mut hashmap: HashMap<usize, Entity> = HashMap::new();
+        hashmap.insert(0, player);
         Self {
-            entities: vec![player],
+            entities: hashmap,
             player_idx: 0,
+            entity_id_counter: 1,
         }
     }
 }
 
 // Queries
 impl EntityManager {
-    pub fn add(&mut self, entity: Entity) {
-        self.entities.push(entity);
+    pub fn spawn(&mut self, entity: Entity) {
+        self.entities.insert(self.entity_id_counter, entity);
+        self.entity_id_counter += 1;
     }
 
-    pub fn get_player(&self) -> &Entity {
-        &self.entities[self.player_idx]
+    pub fn get_player(&self) -> Option<&Entity> {
+        self.entities.get(&self.player_idx)
     }
 
-    pub fn get_player_mut(&mut self) -> &mut Entity {
-        &mut self.entities[self.player_idx]
+    pub fn get_player_mut(&mut self) -> Option<&mut Entity> {
+        self.entities.get_mut(&self.player_idx)
     }
 
-    pub fn get_entity(&self, id: usize) -> &Entity {
-        &self.entities[id]
+    pub fn get_entity(&self, id: usize) -> Option<&Entity> {
+        self.entities.get(&id)
     }
 
-    pub fn get_entity_mut(&mut self, id: usize) -> &mut Entity {
-        &mut self.entities[id]
+    pub fn get_entity_mut(&mut self, id: usize) -> Option<&mut Entity> {
+        self.entities.get_mut(&id)
     }
 
     pub fn iter(&self) -> impl Iterator<Item = &Entity> {
-        self.entities.iter()
+        self.entities.values()
     }
 
     pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut Entity> {
-        self.entities.iter_mut()
+        self.entities.values_mut()
     }
 }
