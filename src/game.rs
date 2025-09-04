@@ -5,6 +5,8 @@ use crate::game_map::generation::map_generator::MapGenerator;
 use crate::game_map::tile_map::*;
 use crate::geometry::rect::Rect;
 
+
+
 pub struct Game {
     pub tile_map: TileMap,
     pub entity_manager: EntityManager,
@@ -20,9 +22,13 @@ impl Game {
         generator.generate_map(&mut tile_map);
 
         // Entities
-        let player = Entity::new(tile_map.rnd_floor_point(), EntityKind::Player);
+        let player = Entity::new(0, tile_map.rnd_floor_point(), EntityKind::Player);
         let mut entity_manager = EntityManager::new(player);
-        entity_manager.spawn(Entity::new(tile_map.rnd_floor_point(), EntityKind::Enemy));
+        entity_manager.spawn(Entity::new(
+            1,
+            tile_map.rnd_floor_point(),
+            EntityKind::Enemy,
+        ));
 
         Self {
             tile_map,

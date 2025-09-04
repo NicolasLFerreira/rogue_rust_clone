@@ -22,6 +22,7 @@ impl Stats {
 }
 
 pub struct Entity {
+    id: usize,
     pub point: Point,
     pub kind: EntityKind,
     pub stats: Stats,
@@ -30,16 +31,26 @@ pub struct Entity {
 // Constructor
 impl Entity {
     pub const EMPTY: Self = Entity {
+        id: 0,
         point: Point::ZERO,
         stats: Stats::EMPTY,
         kind: EntityKind::Enemy,
     };
 
-    pub fn new(point: Point, kind: EntityKind) -> Self {
+    pub fn new(id: usize, point: Point, kind: EntityKind) -> Self {
         Self {
+            id,
             point,
             kind,
             stats: Stats::EMPTY,
         }
+    }
+}
+
+// Queries
+impl Entity {
+    // Behind a getter since changing the id is a big no-no
+    pub fn id(&self) -> usize {
+        self.id
     }
 }

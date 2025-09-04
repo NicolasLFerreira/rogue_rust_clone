@@ -1,16 +1,17 @@
 use crate::entities::entity::Entity;
+use crate::types::Id;
 use std::collections::HashMap;
 
 pub struct EntityManager {
     entities: HashMap<usize, Entity>,
-    player_id: usize,
-    entity_id_counter: usize,
+    player_id: Id,
+    entity_id_counter: Id,
 }
 
 // Constructor
 impl EntityManager {
     pub fn new(player: Entity) -> Self {
-        let mut hashmap: HashMap<usize, Entity> = HashMap::new();
+        let mut hashmap: HashMap<Id, Entity> = HashMap::new();
         hashmap.insert(0, player);
         Self {
             entities: hashmap,
@@ -27,19 +28,19 @@ impl EntityManager {
         self.entity_id_counter += 1;
     }
 
-    pub fn despawn(&mut self, id: usize) {
+    pub fn despawn(&mut self, id: Id) {
         self.entities.remove(&id);
     }
 
-    pub fn player_id(&self) -> usize {
+    pub fn player_id(&self) -> Id {
         self.player_id
     }
 
-    pub fn get_entity(&self, id: usize) -> Option<&Entity> {
+    pub fn get_entity(&self, id: Id) -> Option<&Entity> {
         self.entities.get(&id)
     }
 
-    pub fn get_entity_mut(&mut self, id: usize) -> Option<&mut Entity> {
+    pub fn get_entity_mut(&mut self, id: Id) -> Option<&mut Entity> {
         self.entities.get_mut(&id)
     }
 
