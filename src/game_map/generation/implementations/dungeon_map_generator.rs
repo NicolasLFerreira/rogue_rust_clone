@@ -1,6 +1,6 @@
 use crate::game_map::generation::implementations::utils::{apply_tile_map, pick_wall_point};
 use crate::game_map::generation::map_generator::MapGenerator;
-use crate::game_map::tile::{Tile, TileType};
+use crate::game_map::tile::{Tile, TileKind};
 use crate::game_map::tile_map::TileMap;
 use crate::geometry::delta::Delta;
 use crate::geometry::point::Point;
@@ -56,7 +56,7 @@ impl MapGenerator for DungeonMapGenerator {
 
             // Place a door on a wall
             let door_point = pick_wall_point(room_rect);
-            room_map.set(door_point, Tile::new(TileType::Floor));
+            room_map.set(door_point, Tile::new(TileKind::Floor));
 
             doors.push(door_point);
 
@@ -106,9 +106,9 @@ impl DungeonMapGenerator {
         for y in 0..room.height {
             for x in 0..room.width {
                 if x == 0 || y == 0 || x == room.width - 1 || y == room.height - 1 {
-                    vec_t.push(Tile::new(TileType::Wall))
+                    vec_t.push(Tile::new(TileKind::Wall))
                 } else {
-                    vec_t.push(Tile::new(TileType::Floor))
+                    vec_t.push(Tile::new(TileKind::Floor))
                 }
             }
         }
@@ -143,7 +143,7 @@ impl DungeonMapGenerator {
             match current.difference(delta) {
                 Some(t) => {
                     current = t;
-                    map.set(t, Tile::new(TileType::Floor));
+                    map.set(t, Tile::new(TileKind::Floor));
                     delta = (t - door2).normalize();
                     if delta == Delta::ZERO {
                         break;

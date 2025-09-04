@@ -48,13 +48,13 @@ impl Game {
     pub(crate) fn move_player(&mut self, key: Direction) {
         let delta = key.to_delta();
         if let Some(new_point) = self.player().point.offset(delta) {
-            if self.open_tile(new_point) {
+            if self.can_move_to_tile(new_point) {
                 self.player_mut().point = new_point;
             }
         }
     }
 
-    fn open_tile(&self, point: Point) -> bool {
+    fn can_move_to_tile(&self, point: Point) -> bool {
         self.dungeon_map
             .get(point)
             .map(|tile| tile.is_walkable())
@@ -64,7 +64,7 @@ impl Game {
     pub(crate) fn compose(&self, frame: &mut Frame) {
         // Map
         for (point, tile) in self.dungeon_map.iter_tiles() {
-            let tile_type = tile.tile_type;
+            let tile_type = tile.kind;
 
             // Renders only what's visible
             if tile.visible {
@@ -72,14 +72,16 @@ impl Game {
                     point,
                     Cell {
                         glyph: match tile_type {
-                            TileType::Floor => '.',
-                            TileType::Wall => '#',
-                            TileType::Void => ' ',
+                            TileKind::Void => ' ',
+                            TileKind::Floor => '.',
+                            TileKind::Wall => '#',
+                            TileKind::Door => '%',
                         },
                         foreground: match tile_type {
-                            TileType::Floor => Color::White,
-                            TileType::Wall => Color::White,
-                            TileType::Void => Color::Black,
+                            TileKind::Void => Color::Black,
+                            TileKind::Floor => Color::White,
+                            TileKind::Wall => Color::White,
+                            TileKind::Door => Color::Blue,
                         },
                         background: Color::Black,
                     },

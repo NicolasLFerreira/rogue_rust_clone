@@ -1,4 +1,4 @@
-use crate::game_map::tile::TileType;
+use crate::game_map::tile::TileKind;
 use crate::game_map::tile::*;
 use crate::geometry::point::Point;
 use crate::geometry::rect::Rect;
@@ -58,7 +58,7 @@ impl TileMap {
     pub fn rnd_floor_point(&self) -> Point {
         loop {
             let point = self.rnd_point();
-            if self.get(point).unwrap().tile_type == TileType::Floor {
+            if self.get(point).unwrap().kind == TileKind::Floor {
                 return point;
             }
         }
