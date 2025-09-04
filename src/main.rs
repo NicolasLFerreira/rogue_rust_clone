@@ -6,6 +6,7 @@ mod graphics;
 mod input;
 mod systems;
 
+use crate::systems::combat::Combat;
 use crate::game::Game;
 use crate::geometry::rect::Rect;
 use crate::graphics::graphics::Graphics;
@@ -13,7 +14,7 @@ use crate::graphics::rendering::frame::Frame;
 use crate::graphics::rendering::renderers::crossterm_renderer::CrosstermRenderer;
 use crate::graphics::theme::AsciiTheme;
 use crate::input::action::*;
-use crate::systems::movement::MovementSystem;
+use crate::systems::movement::{MoveEvent, MovementSystem};
 use input::input_handler::get_input;
 use std::io;
 use std::thread::sleep;
@@ -70,7 +71,12 @@ fn main() -> io::Result<()> {
                 match action {
                     Action::Move(move_action) => {
                         let player_id = game.entity_manager.player_id();
-                        MovementSystem::try_move(&mut game, player_id, move_action);
+                        match MovementSystem::try_move(&mut game, player_id, move_action) {
+                            MoveEvent::Occupied(point) => {
+                                game.entity_manager.despawn(1)
+                            }
+                            _ => {}
+                        }
                     }
                     Action::Meta(meta_action) => match meta_action {
                         MetaAction::Quit => break 'master,

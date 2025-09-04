@@ -27,6 +27,10 @@ impl EntityManager {
         self.entity_id_counter += 1;
     }
 
+    pub fn despawn(&mut self, id: usize) {
+        self.entities.remove(&id);
+    }
+
     pub fn player_id(&self) -> usize {
         self.player_id
     }
