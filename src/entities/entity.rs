@@ -1,4 +1,3 @@
-use crate::geometry::delta::Delta;
 use crate::geometry::point::Point;
 
 pub enum EntityKind {
