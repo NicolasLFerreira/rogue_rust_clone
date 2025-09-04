@@ -10,7 +10,6 @@ use rand::distr::Distribution;
 use rand::distr::weighted::WeightedIndex;
 use rand::rngs::ThreadRng;
 use rand::seq::SliceRandom;
-use std::cmp::Ordering;
 
 pub struct DungeonMapGenerator {
     rect: Rect,
@@ -63,6 +62,7 @@ impl MapGenerator for DungeonMapGenerator {
             apply_tile_map(tile_map, &room_map);
         }
 
+        // Handles corridor generation
         self.corridor_algorithm(tile_map, rooms);
     }
 }
@@ -131,7 +131,6 @@ impl DungeonMapGenerator {
     }
 
     fn carve_corridor(&mut self, map: &mut TileMap, origin: Point, end: Point) {
-        let mut first_wall = false;
         let mut current_point = origin;
         let mut delta = (origin - end).normalize();
         loop {

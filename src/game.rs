@@ -76,17 +76,18 @@ impl Game {
                         glyph: match tile_kind {
                             TileKind::Void => ' ',
                             TileKind::Floor => '.',
-                            TileKind::Wall => '#',
+                            TileKind::Wall => '=',
                             TileKind::Door => '+',
-                            TileKind::Corridor => ' ',
+                            TileKind::Corridor => '#',
                         },
                         foreground: match tile_kind {
                             TileKind::Void => Color::Black,
+                            TileKind::Floor => Color::Green,
+                            TileKind::Wall => Color::DarkYellow,
                             _ => Color::White,
                         },
                         background: match tile_kind {
                             TileKind::Void => Color::Black,
-                            TileKind::Corridor => Color::DarkGrey,
                             _ => Color::Black,
                         },
                     },
