@@ -1,4 +1,4 @@
-use crate::game_map::generation::implementations::utils::{apply_tile_map, pick_wall_point};
+use crate::game_map::generation::implementations::utils::apply_tile_map;
 use crate::game_map::generation::map_generator::MapGenerator;
 use crate::game_map::tile::{Tile, TileKind};
 use crate::game_map::tile_map::TileMap;
@@ -42,41 +42,27 @@ impl MapGenerator for DungeonMapGenerator {
         let mut available: Vec<usize> = (0..ra).collect();
         let (selected_indices, _) = available.partial_shuffle(&mut self.rng, room_count);
 
-        let mut doors: Vec<Point> = vec![];
+        // Keeps track of room locations for the corridor algorithm
+        let mut rooms: Vec<Rect> = vec![];
 
         for &mut i in selected_indices {
+            // Deconstructs row-major index
             let x = i % rx;
             let y = i / rx;
 
+            // Room anchor and dimensions
             let region_anchor = Point::new(rw * x, rh * y);
             let region_rect = Rect::new_anchor(region_anchor, rw, rh);
 
+            // Produces room
             let room_rect = self.create_room(region_rect);
-            let mut room_map = Self::generate_tile_map(room_rect);
-
-            // Place a door on a wall
-            let door_point = pick_wall_point(room_rect);
-            room_map.set(door_point, Tile::new(TileKind::Floor));
-
-            doors.push(door_point);
+            rooms.push(room_rect);
+            let room_map = Self::generate_tile_map(room_rect);
 
             apply_tile_map(tile_map, &room_map);
         }
 
-        let mut to_break = false;
-        let door_num = doors.len();
-        for (mut i, door) in doors.iter().enumerate() {
-            if i + 1 >= door_num {
-                i = 0;
-                to_break = true;
-            }
-            let next = doors[i + 1];
-            self.make_corridor(tile_map, *door, next);
-
-            if to_break {
-                break;
-            }
-        }
+        self.corridor_algorithm(tile_map, rooms);
     }
 }
 
@@ -136,21 +122,43 @@ impl DungeonMapGenerator {
         room_counts[dist.sample(&mut self.rng)]
     }
 
-    fn make_corridor(&mut self, map: &mut TileMap, door1: Point, door2: Point) {
-        let mut current = door1;
+    fn corridor_algorithm(&mut self, tile_map: &mut TileMap, rooms: Vec<Rect>) {
+        let mid_points: Vec<Point> = rooms.iter().map(|room| room.mid_point()).collect();
+
+        let mut to_break = false;
+        let room_num = mid_points.len();
+        for (mut i, room) in mid_points.iter().enumerate() {
+            if i + 1 >= room_num {
+                i = 0;
+                to_break = true;
+            }
+            let next = mid_points[i + 1];
+            self.carve_corridor(tile_map, *room, next);
+
+            if to_break {
+                break;
+            }
+        }
+    }
+
+    fn carve_corridor(&mut self, map: &mut TileMap, door1: Point, door2: Point) {
+        let mut current_point = door1;
         let mut delta = (door1 - door2).normalize();
         loop {
-            match current.difference(delta) {
-                Some(t) => {
-                    current = t;
-                    map.set(t, Tile::new(TileKind::Floor));
-                    delta = (t - door2).normalize();
-                    if delta == Delta::ZERO {
-                        break;
+            if let Some(valid_point) = current_point.difference(delta) {
+                current_point = valid_point;
+
+                if let Some(tile) = map.get_mut(current_point) {
+                    match tile.kind {
+                        TileKind::Void => tile.convert_to_corridor(),
+                        TileKind::Wall => tile.convert_to_door(),
+                        _ => {}
                     }
                 }
-                None => {
-                    dbg!("Corridor algorithm fail");
+
+                // Next
+                delta = (valid_point - door2).normalize();
+                if delta == Delta::ZERO {
                     break;
                 }
             }

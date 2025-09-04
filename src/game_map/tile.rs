@@ -4,6 +4,7 @@ pub enum TileKind {
     Floor,
     Wall,
     Door,
+    Corridor,
 }
 
 #[derive(Copy, Clone, PartialEq, Debug)]
@@ -45,8 +46,10 @@ impl Tile {
     }
 
     pub fn is_walkable(&self) -> bool {
-        matches!(self.kind, TileKind::Floor | TileKind::Door)
-            && self.collision == TileCollision::Passable
+        matches!(
+            self.kind,
+            TileKind::Floor | TileKind::Door | TileKind::Corridor
+        ) && self.collision == TileCollision::Passable
     }
 
     pub fn blocks_sight(&self) -> bool {
@@ -56,6 +59,18 @@ impl Tile {
     pub fn reveal(&mut self) {
         self.revealed = true;
         self.visible = true;
+    }
+
+    pub fn convert_to_corridor(&mut self) {
+        self.kind = TileKind::Corridor;
+        self.collision = TileCollision::Passable;
+        self.reveal();
+    }
+
+    pub fn convert_to_door(&mut self) {
+        self.kind = TileKind::Door;
+        self.collision = TileCollision::Passable;
+        self.reveal();
     }
 
     pub fn hide(&mut self) {
