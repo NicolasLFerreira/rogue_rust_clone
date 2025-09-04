@@ -9,7 +9,6 @@ use crate::game::Game;
 use crate::geometry::rect::Rect;
 use crate::graphics::graphics::Graphics;
 use crate::graphics::rendering::frame::Frame;
-use crate::graphics::rendering::renderer::Renderer;
 use crate::graphics::rendering::renderers::crossterm_renderer::CrosstermRenderer;
 use crate::graphics::theme::AsciiTheme;
 use crate::input::action::*;

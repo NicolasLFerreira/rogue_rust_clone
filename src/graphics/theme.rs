@@ -1,4 +1,4 @@
-use crate::entities::entity::{Entity, EntityType};
+use crate::entities::entity::{Entity, EntityKind};
 use crate::game_map::tile::{Tile, TileKind};
 use crate::graphics::rendering::cell::Cell;
 use crossterm::style::Color;
@@ -46,17 +46,17 @@ impl Theme for AsciiTheme {
 
     fn entity_theme(&self, entity: &Entity) -> Cell {
         Cell {
-            glyph: match entity.entity_type {
-                EntityType::Player => '@',
-                EntityType::Enemy => '&',
+            glyph: match entity.kind {
+                EntityKind::Player => '@',
+                EntityKind::Enemy => '&',
             },
-            foreground: match entity.entity_type {
-                EntityType::Player => Color::Yellow,
-                EntityType::Enemy => Color::DarkRed,
+            foreground: match entity.kind {
+                EntityKind::Player => Color::Yellow,
+                EntityKind::Enemy => Color::DarkRed,
             },
-            background: match entity.entity_type {
-                EntityType::Player => Color::DarkBlue,
-                EntityType::Enemy => Color::Black,
+            background: match entity.kind {
+                EntityKind::Player => Color::DarkBlue,
+                EntityKind::Enemy => Color::Black,
             },
         }
     }

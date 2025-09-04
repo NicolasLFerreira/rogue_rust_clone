@@ -1,17 +1,17 @@
 use crate::geometry::point::Point;
 
-pub enum EntityType {
+pub enum EntityKind {
     Player,
     Enemy,
 }
 
 pub struct Entity {
     pub point: Point,
-    pub entity_type: EntityType,
+    pub kind: EntityKind,
 }
 
 impl Entity {
-    pub fn new(point: Point, entity_type: EntityType) -> Self {
-        Self { point, entity_type }
+    pub fn new(point: Point, kind: EntityKind) -> Self {
+        Self { point, kind }
     }
 }
