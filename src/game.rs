@@ -1,4 +1,5 @@
 use crate::entities::entity::{Entity, EntityKind};
+use crate::entities::entity_manager::EntityManager;
 use crate::game_map::generation::generators::dungeon_map_generator::DungeonMapGenerator;
 use crate::game_map::generation::map_generator::MapGenerator;
 use crate::game_map::tile_map::*;
@@ -7,8 +8,8 @@ use crate::geometry::point::Point;
 use crate::geometry::rect::Rect;
 
 pub struct Game {
-    pub map: TileMap,
-    pub entities: Vec<Entity>,
+    pub tile_map: TileMap,
+    pub entity_manager: EntityManager,
     pub player_idx: usize,
 }
 
@@ -22,36 +23,28 @@ impl Game {
         generator.generate_map(&mut tile_map);
 
         // Entities
-        let player: Entity = Entity::new(tile_map.rnd_floor_point(), EntityKind::Player);
-        let entities = vec![player];
-        // entities.push(Entity::new(Point::new(5, 5), EntityType::Enemy));
+        let player = Entity::new(tile_map.rnd_floor_point(), EntityKind::Player);
+        let mut entity_manager = EntityManager::new(player);
+        entity_manager.add(Entity::new(Point::new(5, 5), EntityKind::Enemy));
 
         Self {
-            map: tile_map,
-            entities,
+            tile_map,
+            entity_manager,
             player_idx: 0,
         }
     }
 
-    pub fn player(&self) -> &Entity {
-        &self.entities[self.player_idx]
-    }
-
-    pub fn player_mut(&mut self) -> &mut Entity {
-        &mut self.entities[self.player_idx]
-    }
-
     pub(crate) fn move_player(&mut self, key: Direction) {
         let delta = key.to_delta();
-        if let Some(new_point) = self.player().point.offset(delta) {
+        if let Some(new_point) = self.entity_manager.get_player().point.offset(delta) {
             if self.can_move_to_tile(new_point) {
-                self.player_mut().point = new_point;
+                self.entity_manager.get_player_mut().point = new_point;
             }
         }
     }
 
     fn can_move_to_tile(&self, point: Point) -> bool {
-        self.map
+        self.tile_map
             .safe_get(point)
             .map(|tile| tile.is_walkable())
             .unwrap_or(false)
