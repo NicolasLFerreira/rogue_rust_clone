@@ -66,7 +66,7 @@ impl Point {
             })
         }
     }
-    
+
     pub fn difference(self, d: Delta) -> Option<Point> {
         let nx = self.x as i32 - d.dx;
         let ny = self.y as i32 - d.dy;

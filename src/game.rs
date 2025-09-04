@@ -64,20 +64,20 @@ impl Game {
     pub(crate) fn compose(&self, frame: &mut Frame) {
         // Map
         for (point, tile) in self.dungeon_map.iter_tiles() {
-            let tile_type = tile.kind;
+            let tile_kind = tile.kind;
 
             // Renders only what's visible
             if tile.visible {
                 frame.put(
                     point,
                     Cell {
-                        glyph: match tile_type {
+                        glyph: match tile_kind {
                             TileKind::Void => ' ',
                             TileKind::Floor => '.',
                             TileKind::Wall => '#',
                             TileKind::Door => '%',
                         },
-                        foreground: match tile_type {
+                        foreground: match tile_kind {
                             TileKind::Void => Color::Black,
                             TileKind::Floor => Color::White,
                             TileKind::Wall => Color::White,
