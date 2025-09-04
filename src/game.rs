@@ -5,6 +5,7 @@ use crate::game_map::tile_map::*;
 use crate::geometry::direction::Direction;
 use crate::geometry::point::Point;
 use crate::geometry::rect::Rect;
+use crate::graphics::graphics::Graphics;
 use crate::graphics::rendering::frame::Frame;
 use crate::graphics::theme::{AsciiTheme, Theme};
 use crossterm::style::Color;
@@ -13,6 +14,7 @@ pub struct Game {
     pub map: TileMap,
     pub entities: Vec<Entity>,
     pub player_idx: usize,
+    theme: Box<dyn Theme>,
 }
 
 impl Game {
@@ -33,6 +35,7 @@ impl Game {
             map: tile_map,
             entities,
             player_idx: 0,
+            theme: Box::new(AsciiTheme {}),
         }
     }
 
@@ -61,17 +64,15 @@ impl Game {
     }
 
     pub(crate) fn compose(&self, frame: &mut Frame) {
-        let theme: Box<dyn Theme> = Box::new(AsciiTheme {});
-
         // Map
         for (point, tile) in self.map.iter_tiles() {
-            frame.put(point, theme.tile_theme(tile))
+            frame.put(point, self.theme.tile_theme(tile))
         }
 
         // Entities
         for entity in self.entities.iter() {
             if self.map.get(entity.point).visible {
-                frame.put(entity.point, theme.entity_theme(entity));
+                frame.put(entity.point, self.theme.entity_theme(entity));
             }
         }
 

@@ -7,9 +7,11 @@ mod input;
 
 use crate::game::Game;
 use crate::geometry::rect::Rect;
+use crate::graphics::graphics::Graphics;
 use crate::graphics::rendering::frame::Frame;
 use crate::graphics::rendering::renderer::Renderer;
 use crate::graphics::rendering::renderers::crossterm_renderer::CrosstermRenderer;
+use crate::graphics::theme::AsciiTheme;
 use crate::input::action::*;
 use input::input_handler::get_input;
 use std::io;
@@ -28,7 +30,10 @@ fn main() -> io::Result<()> {
     let map_rect: Rect = Rect::new_dimensions(sw, sh - 3);
 
     // Renderer instance remains the same for the program's entire lifetime
-    let mut renderer: Box<dyn Renderer> = Box::new(CrosstermRenderer::new(screen_rect));
+    let mut graphics: Graphics = Graphics::new(
+        Box::new(AsciiTheme {}),
+        Box::new(CrosstermRenderer::new(screen_rect)),
+    );
     let mut frame = Frame::new(screen_rect);
 
     'master: loop {
@@ -36,7 +41,7 @@ fn main() -> io::Result<()> {
         let mut game = Game::new(map_rect);
 
         // Rendering setup
-        renderer.begin()?;
+        graphics.renderer().begin()?;
         frame.clear();
         let mut needs_redraw = true; // turn-based: redraw only when state changes
 
@@ -47,8 +52,8 @@ fn main() -> io::Result<()> {
 
             // Renders changes from previous frame
             if needs_redraw {
-                game.compose(&mut frame);
-                renderer.present(&frame)?;
+                graphics.compose_frame(&mut frame, &game);
+                graphics.renderer().present(&frame)?;
                 needs_redraw = false;
             }
 
@@ -79,5 +84,5 @@ fn main() -> io::Result<()> {
         }
     }
 
-    renderer.end()
+    graphics.renderer().end()
 }
