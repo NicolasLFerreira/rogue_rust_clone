@@ -18,13 +18,13 @@ impl Point {
 
 // Queries
 impl Point {
-    pub fn distance(&self, other: Point) -> f64 {
+    pub fn euclidean_distance(&self, other: Point) -> f64 {
         let dx = (self.x - other.x) as f64;
         let dy = (self.y - other.y) as f64;
         (dx * dx + dy * dy).sqrt()
     }
 
-    pub fn manhattan_distance(&self, other: &Point) -> usize {
+    pub fn manhattan_distance(&self, other: Point) -> usize {
         (self.x as isize - other.x as isize).abs() as usize
             + (self.y as isize - other.y as isize).abs() as usize
     }

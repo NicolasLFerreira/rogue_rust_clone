@@ -71,28 +71,23 @@ impl Game {
                 frame.put(
                     point,
                     Cell {
-                        // Exhaustive matches so every time a new kind is added,
+                        // Exhaustive matches for glyphs so every time a new kind is added,
                         // rendering is required to be specified
                         glyph: match tile_kind {
                             TileKind::Void => ' ',
                             TileKind::Floor => '.',
                             TileKind::Wall => '#',
-                            TileKind::Door => '%',
+                            TileKind::Door => '+',
                             TileKind::Corridor => ' ',
                         },
                         foreground: match tile_kind {
                             TileKind::Void => Color::Black,
-                            TileKind::Floor => Color::White,
-                            TileKind::Wall => Color::White,
-                            TileKind::Door => Color::White,
-                            TileKind::Corridor => Color::White,
+                            _ => Color::White,
                         },
                         background: match tile_kind {
                             TileKind::Void => Color::Black,
-                            TileKind::Floor => Color::Black,
-                            TileKind::Wall => Color::Black,
-                            TileKind::Door => Color::Black,
-                            TileKind::Corridor => Color::Grey,
+                            TileKind::Corridor => Color::DarkGrey,
+                            _ => Color::Black,
                         },
                     },
                 )
@@ -123,7 +118,10 @@ impl Game {
                         EntityType::Player => Color::Yellow,
                         EntityType::Enemy => Color::DarkRed,
                     },
-                    background: Color::Black,
+                    background: match entity.entity_type {
+                        EntityType::Player => Color::DarkBlue,
+                        EntityType::Enemy => Color::Black,
+                    },
                 },
             );
         }

@@ -10,6 +10,7 @@ use rand::distr::Distribution;
 use rand::distr::weighted::WeightedIndex;
 use rand::rngs::ThreadRng;
 use rand::seq::SliceRandom;
+use std::cmp::Ordering;
 
 pub struct DungeonMapGenerator {
     rect: Rect,
@@ -123,45 +124,111 @@ impl DungeonMapGenerator {
     }
 
     fn corridor_algorithm(&mut self, tile_map: &mut TileMap, rooms: Vec<Rect>) {
-        let mid_points: Vec<Point> = rooms.iter().map(|room| room.mid_point()).collect();
-
-        let mut to_break = false;
-        let room_num = mid_points.len();
-        for (mut i, room) in mid_points.iter().enumerate() {
-            if i + 1 >= room_num {
-                i = 0;
-                to_break = true;
-            }
-            let next = mid_points[i + 1];
-            self.carve_corridor(tile_map, *room, next);
-
-            if to_break {
-                break;
-            }
+        let mst = self.mst(tile_map, rooms);
+        for conn in mst {
+            self.carve_corridor(tile_map, conn.from, conn.to);
         }
     }
 
-    fn carve_corridor(&mut self, map: &mut TileMap, door1: Point, door2: Point) {
-        let mut current_point = door1;
-        let mut delta = (door1 - door2).normalize();
+    fn carve_corridor(&mut self, map: &mut TileMap, origin: Point, end: Point) {
+        let mut first_wall = false;
+        let mut current_point = origin;
+        let mut delta = (origin - end).normalize();
         loop {
+            if delta.dx != 0 && delta.dy != 0 {
+                let coin_flip = self.rng.random_bool(0.5);
+                if coin_flip {
+                    delta.dx = 0;
+                } else {
+                    delta.dy = 0;
+                }
+            }
+
             if let Some(valid_point) = current_point.difference(delta) {
                 current_point = valid_point;
 
                 if let Some(tile) = map.get_mut(current_point) {
                     match tile.kind {
                         TileKind::Void => tile.convert_to_corridor(),
-                        TileKind::Wall => tile.convert_to_door(),
+                        TileKind::Wall => {
+                            tile.convert_to_door();
+                        }
                         _ => {}
                     }
                 }
 
                 // Next
-                delta = (valid_point - door2).normalize();
+                delta = (current_point - end).normalize();
                 if delta == Delta::ZERO {
                     break;
                 }
             }
         }
+    }
+
+    fn mst(&mut self, tile_map: &mut TileMap, rooms: Vec<Rect>) -> Vec<Connection> {
+        // Calculates the center of the rooms
+        let centers: Vec<Point> = rooms.iter().map(|room| room.mid_point()).collect();
+
+        // Calculate weighed connections
+        let mut connections: Vec<Connection> = vec![];
+        for (i, from) in centers.iter().enumerate() {
+            for to in &centers[i + 1..] {
+                connections.push(Connection {
+                    from: *from,
+                    to: *to,
+                    weigh: from.manhattan_distance(*to),
+                })
+            }
+        }
+
+        // Sorts by weigh
+        connections.sort_by_key(|c| c.weigh);
+        let mut uf = UnionFind::new(centers.len());
+
+        // Return value of the mst
+        let mut mst: Vec<Connection> = vec![];
+        for conn in connections {
+            let from_idx = centers.iter().position(|p| *p == conn.from).unwrap();
+            let to_idx = centers.iter().position(|p| *p == conn.to).unwrap();
+
+            if uf.find(from_idx) != uf.find(to_idx) {
+                uf.union(from_idx, to_idx);
+                mst.push(conn)
+            }
+        }
+
+        mst
+    }
+}
+
+struct Connection {
+    from: Point,
+    to: Point,
+    weigh: usize,
+}
+
+struct UnionFind {
+    parent: Vec<usize>,
+}
+
+impl UnionFind {
+    fn new(n: usize) -> Self {
+        UnionFind {
+            parent: (0..n).collect(),
+        }
+    }
+
+    fn find(&mut self, i: usize) -> usize {
+        if self.parent[i] != i {
+            self.parent[i] = self.find(self.parent[i]);
+        }
+        self.parent[i]
+    }
+
+    fn union(&mut self, a: usize, b: usize) {
+        let ra = self.find(a);
+        let rb = self.find(b);
+        self.parent[ra] = rb;
     }
 }
