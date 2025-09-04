@@ -8,6 +8,8 @@ use crate::geometry::point::Point;
 use crate::geometry::rect::Rect;
 use crate::graphics::rendering::cell::Cell;
 use crate::graphics::rendering::frame::Frame;
+use crate::graphics::theme;
+use crate::graphics::theme::{AsciiTheme, Theme};
 use crossterm::style::Color;
 
 pub struct Game {
@@ -62,69 +64,16 @@ impl Game {
     }
 
     pub(crate) fn compose(&self, frame: &mut Frame) {
+        let theme: Box<dyn Theme> = Box::new(AsciiTheme {});
+
         // Map
         for (point, tile) in self.dungeon_map.iter_tiles() {
-            let tile_kind = tile.kind;
-
-            // Renders only what's visible
-            if tile.visible {
-                frame.put(
-                    point,
-                    Cell {
-                        // Exhaustive matches for glyphs so every time a new kind is added,
-                        // rendering is required to be specified
-                        glyph: match tile_kind {
-                            TileKind::Void => ' ',
-                            TileKind::Floor => '.',
-                            TileKind::Wall => '=',
-                            TileKind::Door => '+',
-                            TileKind::Corridor => '#',
-                        },
-                        foreground: match tile_kind {
-                            TileKind::Void => Color::Black,
-                            TileKind::Floor => Color::Green,
-                            TileKind::Wall => Color::DarkYellow,
-                            _ => Color::White,
-                        },
-                        background: match tile_kind {
-                            TileKind::Void => Color::Black,
-                            _ => Color::Black,
-                        },
-                    },
-                )
-            }
-            // Undiscovered tiles
-            else {
-                frame.put(
-                    point,
-                    Cell {
-                        glyph: ' ',
-                        foreground: Color::Black,
-                        background: Color::Black,
-                    },
-                )
-            }
+            frame.put(point, theme.tile_theme(tile))
         }
 
         // Entities
         for entity in self.entities.iter() {
-            frame.put(
-                entity.point,
-                Cell {
-                    glyph: match entity.entity_type {
-                        EntityType::Player => '@',
-                        EntityType::Enemy => '&',
-                    },
-                    foreground: match entity.entity_type {
-                        EntityType::Player => Color::Yellow,
-                        EntityType::Enemy => Color::DarkRed,
-                    },
-                    background: match entity.entity_type {
-                        EntityType::Player => Color::DarkBlue,
-                        EntityType::Enemy => Color::Black,
-                    },
-                },
-            );
+            frame.put(entity.point, theme.entity_theme(entity));
         }
 
         // UI
