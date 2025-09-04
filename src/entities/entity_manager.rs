@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 pub struct EntityManager {
     entities: HashMap<usize, Entity>,
-    player_idx: usize,
+    player_id: usize,
     entity_id_counter: usize,
 }
 
@@ -14,7 +14,7 @@ impl EntityManager {
         hashmap.insert(0, player);
         Self {
             entities: hashmap,
-            player_idx: 0,
+            player_id: 0,
             entity_id_counter: 1,
         }
     }
@@ -27,12 +27,8 @@ impl EntityManager {
         self.entity_id_counter += 1;
     }
 
-    pub fn get_player(&self) -> Option<&Entity> {
-        self.entities.get(&self.player_idx)
-    }
-
-    pub fn get_player_mut(&mut self) -> Option<&mut Entity> {
-        self.entities.get_mut(&self.player_idx)
+    pub fn player_id(&self) -> usize {
+        self.player_id
     }
 
     pub fn get_entity(&self, id: usize) -> Option<&Entity> {

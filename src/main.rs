@@ -69,7 +69,8 @@ fn main() -> io::Result<()> {
             for action in actions {
                 match action {
                     Action::Move(move_action) => {
-                        MovementSystem::try_move(&mut game, 0, move_action)
+                        let player_id = game.entity_manager.player_id();
+                        MovementSystem::try_move(&mut game, player_id, move_action);
                     }
                     Action::Meta(meta_action) => match meta_action {
                         MetaAction::Quit => break 'master,
