@@ -2,6 +2,7 @@ use crate::game_map::generation::implementations::utils::{apply_tile_map, pick_w
 use crate::game_map::generation::map_generator::MapGenerator;
 use crate::game_map::tile::{Tile, TileType};
 use crate::game_map::tile_map::TileMap;
+use crate::geometry::delta::Delta;
 use crate::geometry::point::Point;
 use crate::geometry::rect::Rect;
 use rand::Rng;
@@ -41,6 +42,8 @@ impl MapGenerator for DungeonMapGenerator {
         let mut available: Vec<usize> = (0..ra).collect();
         let (selected_indices, _) = available.partial_shuffle(&mut self.rng, room_count);
 
+        let mut doors: Vec<Point> = vec![];
+
         for &mut i in selected_indices {
             let x = i % rx;
             let y = i / rx;
@@ -55,7 +58,24 @@ impl MapGenerator for DungeonMapGenerator {
             let door_point = pick_wall_point(room_rect);
             room_map.set(door_point, Tile::new(TileType::Floor));
 
+            doors.push(door_point);
+
             apply_tile_map(tile_map, &room_map);
+        }
+
+        let mut to_break = false;
+        let door_num = doors.len();
+        for (mut i, door) in doors.iter().enumerate() {
+            if i + 1 >= door_num {
+                i = 0;
+                to_break = true;
+            }
+            let next = doors[i + 1];
+            self.make_corridor(tile_map, *door, next);
+
+            if to_break {
+                break;
+            }
         }
     }
 }
@@ -114,5 +134,26 @@ impl DungeonMapGenerator {
             .collect();
         let dist = WeightedIndex::new(&weights).unwrap();
         room_counts[dist.sample(&mut self.rng)]
+    }
+
+    fn make_corridor(&mut self, map: &mut TileMap, door1: Point, door2: Point) {
+        let mut current = door1;
+        let mut delta = (door1 - door2).normalize();
+        loop {
+            match current.difference(delta) {
+                Some(t) => {
+                    current = t;
+                    map.set(t, Tile::new(TileType::Floor));
+                    delta = (t - door2).normalize();
+                    if delta == Delta::ZERO {
+                        break;
+                    }
+                }
+                None => {
+                    dbg!("Corridor algorithm fail");
+                    break;
+                }
+            }
+        }
     }
 }

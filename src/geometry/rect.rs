@@ -66,6 +66,13 @@ impl Rect {
             && other.y < self.y + self.height
     }
 
+    pub fn mid_point(&self) -> Point {
+        Point {
+            x: self.x + self.width / 2,
+            y: self.y + self.height / 2,
+        }
+    }
+
     pub fn iter_points(&self) -> impl Iterator<Item = Point> {
         let x_start = self.x;
         let y_start = self.y;

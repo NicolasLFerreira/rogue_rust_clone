@@ -18,7 +18,7 @@ impl Point {
 
 // Queries
 impl Point {
-    pub fn distance(&self, other: &Point) -> f64 {
+    pub fn distance(&self, other: Point) -> f64 {
         let dx = (self.x - other.x) as f64;
         let dy = (self.y - other.y) as f64;
         (dx * dx + dy * dy).sqrt()
@@ -56,6 +56,20 @@ impl Point {
     pub fn offset(self, d: Delta) -> Option<Point> {
         let nx = self.x as i32 + d.dx;
         let ny = self.y as i32 + d.dy;
+
+        if nx < 0 || ny < 0 {
+            None
+        } else {
+            Some(Point {
+                x: nx as usize,
+                y: ny as usize,
+            })
+        }
+    }
+    
+    pub fn difference(self, d: Delta) -> Option<Point> {
+        let nx = self.x as i32 - d.dx;
+        let ny = self.y as i32 - d.dy;
 
         if nx < 0 || ny < 0 {
             None
