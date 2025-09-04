@@ -1,6 +1,6 @@
 use crate::geometry::point::Point;
 use crate::geometry::rect::Rect;
-use crate::rendering::cell::Cell;
+use crate::graphics::rendering::cell::Cell;
 use crossterm::style::Color;
 
 pub struct Frame {

@@ -1,4 +1,4 @@
-use crate::game_map::generation::implementations::utils::apply_tile_map;
+use crate::game_map::generation::generators::utils::apply_tile_map;
 use crate::game_map::generation::map_generator::MapGenerator;
 use crate::game_map::tile::{Tile, TileKind};
 use crate::game_map::tile_map::TileMap;

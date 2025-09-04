@@ -1,4 +1,4 @@
-use crate::rendering::frame::Frame;
+use crate::graphics::rendering::frame::Frame;
 use std::io::Result;
 
 pub trait Renderer {

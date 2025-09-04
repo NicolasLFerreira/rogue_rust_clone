@@ -1,7 +1,7 @@
 use crate::geometry::rect::Rect;
-use crate::rendering::cell::Cell;
-use crate::rendering::frame::Frame;
-use crate::rendering::renderer::Renderer;
+use crate::graphics::rendering::cell::Cell;
+use crate::graphics::rendering::frame::Frame;
+use crate::graphics::rendering::renderer::Renderer;
 use crossterm::cursor::{Hide, MoveTo, Show};
 use crossterm::style::{Print, SetBackgroundColor, SetForegroundColor};
 use crossterm::terminal::{Clear, ClearType, disable_raw_mode, enable_raw_mode};

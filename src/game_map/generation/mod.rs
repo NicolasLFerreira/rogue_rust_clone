@@ -1,2 +1,2 @@
-pub mod implementations;
+pub mod generators;
 pub mod map_generator;
