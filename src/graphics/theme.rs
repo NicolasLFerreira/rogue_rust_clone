@@ -4,7 +4,7 @@ use crate::graphics::rendering::cell::Cell;
 use crossterm::style::Color;
 
 pub trait Theme {
-    fn tile_theme(&self, tile: &Tile) -> Cell;
+    fn tile_theme(&self, tile: Tile) -> Cell;
     fn entity_theme(&self, entity: &Entity) -> Cell;
 }
 
@@ -12,7 +12,7 @@ pub trait Theme {
 pub struct AsciiTheme {}
 
 impl Theme for AsciiTheme {
-    fn tile_theme(&self, tile: &Tile) -> Cell {
+    fn tile_theme(&self, tile: Tile) -> Cell {
         if !tile.visible {
             Cell {
                 glyph: ' ',

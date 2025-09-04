@@ -13,7 +13,7 @@ use crate::graphics::theme::{AsciiTheme, Theme};
 use crossterm::style::Color;
 
 pub struct Game {
-    pub dungeon_map: TileMap,
+    pub map: TileMap,
     pub entities: Vec<Entity>,
     pub player_idx: usize,
 }
@@ -33,7 +33,7 @@ impl Game {
         // entities.push(Entity::new(Point::new(5, 5), EntityType::Enemy));
 
         Self {
-            dungeon_map: tile_map,
+            map: tile_map,
             entities,
             player_idx: 0,
         }
@@ -57,8 +57,8 @@ impl Game {
     }
 
     fn can_move_to_tile(&self, point: Point) -> bool {
-        self.dungeon_map
-            .get(point)
+        self.map
+            .safe_get(point)
             .map(|tile| tile.is_walkable())
             .unwrap_or(false)
     }
@@ -67,18 +67,20 @@ impl Game {
         let theme: Box<dyn Theme> = Box::new(AsciiTheme {});
 
         // Map
-        for (point, tile) in self.dungeon_map.iter_tiles() {
+        for (point, tile) in self.map.iter_tiles() {
             frame.put(point, theme.tile_theme(tile))
         }
 
         // Entities
         for entity in self.entities.iter() {
-            frame.put(entity.point, theme.entity_theme(entity));
+            if self.map.get(entity.point).visible {
+                frame.put(entity.point, theme.entity_theme(entity));
+            }
         }
 
         // UI
         frame.put_str(
-            Point::new(0, self.dungeon_map.rect.height),
+            Point::new(0, self.map.rect.height),
             "q to quit",
             Color::Yellow,
             Color::Black,

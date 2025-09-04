@@ -31,8 +31,12 @@ impl TileMap {
         }
     }
 
-    pub fn get(&self, point: Point) -> Option<&Tile> {
-        self.index(point).map(|i| &self.tile_map[i])
+    pub fn get(&self, point: Point) -> Tile {
+        self.tile_map[self.index(point).unwrap()]
+    }
+
+    pub fn safe_get(&self, point: Point) -> Option<Tile> {
+        self.index(point).map(|i| self.tile_map[i])
     }
 
     pub fn get_mut(&mut self, point: Point) -> Option<&mut Tile> {
@@ -49,16 +53,16 @@ impl TileMap {
         }
     }
 
-    pub fn iter_tiles(&self) -> impl Iterator<Item = (Point, &Tile)> {
+    pub fn iter_tiles(&self) -> impl Iterator<Item = (Point, Tile)> {
         self.rect
             .iter_points()
-            .filter_map(move |p| self.get(p).map(|tile| (p, tile)))
+            .filter_map(move |p| self.safe_get(p).map(|tile| (p, tile)))
     }
 
     pub fn rnd_floor_point(&self) -> Point {
         loop {
             let point = self.rnd_point();
-            if self.get(point).unwrap().kind == TileKind::Floor {
+            if self.safe_get(point).unwrap().kind == TileKind::Floor {
                 return point;
             }
         }
