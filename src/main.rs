@@ -29,6 +29,7 @@ fn main() -> io::Result<()> {
 
     // Renderer instance remains the same for the program's entire lifetime
     let mut renderer: Box<dyn Renderer> = Box::new(CrosstermRenderer::new(screen_rect));
+    let mut frame = Frame::new(screen_rect);
 
     'master: loop {
         // Game instance is reset in-between games.
@@ -36,7 +37,7 @@ fn main() -> io::Result<()> {
 
         // Rendering setup
         renderer.begin()?;
-        let mut frame = Frame::new(screen_rect);
+        frame.clear();
         let mut needs_redraw = true; // turn-based: redraw only when state changes
 
         // Main loop. Break this and the game ends

@@ -1,14 +1,11 @@
 use crate::entities::entity::{Entity, EntityType};
 use crate::game_map::generation::generators::dungeon_map_generator::DungeonMapGenerator;
 use crate::game_map::generation::map_generator::MapGenerator;
-use crate::game_map::tile::*;
 use crate::game_map::tile_map::*;
 use crate::geometry::direction::Direction;
 use crate::geometry::point::Point;
 use crate::geometry::rect::Rect;
-use crate::graphics::rendering::cell::Cell;
 use crate::graphics::rendering::frame::Frame;
-use crate::graphics::theme;
 use crate::graphics::theme::{AsciiTheme, Theme};
 use crossterm::style::Color;
 

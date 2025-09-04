@@ -53,7 +53,7 @@ impl Renderer for CrosstermRenderer {
     }
 
     fn begin(&mut self) -> std::io::Result<()> {
-        self.prev.clear(Cell::default());
+        self.prev.fill(Cell::default());
         self.clear()?;
         enable_raw_mode()?;
         execute!(self.out, Hide, Clear(ClearType::All))

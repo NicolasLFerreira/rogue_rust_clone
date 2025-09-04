@@ -21,7 +21,15 @@ impl Frame {
         point.y * self.rect.width + point.x
     }
 
-    pub(crate) fn clear(&mut self, fill: Cell) {
+    pub fn clear(&mut self) {
+        self.fill(Cell {
+            glyph: ' ',
+            foreground: Color::Black,
+            background: Color::Black,
+        })
+    }
+
+    pub(crate) fn fill(&mut self, fill: Cell) {
         self.cells.fill(fill);
     }
 
