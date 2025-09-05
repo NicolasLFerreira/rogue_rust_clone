@@ -1,7 +1,7 @@
 use crate::entities::entity::{Entity, EntityKind};
 use crate::game_map::tile::{Tile, TileKind};
-use crate::graphics::rendering::cell::Cell;
 use crate::graphics::color::Color;
+use crate::graphics::rendering::cell::Cell;
 
 pub trait Theme {
     fn tile_theme(&self, tile: Tile) -> Cell;

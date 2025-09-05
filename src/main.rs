@@ -3,7 +3,6 @@ mod game;
 mod game_map;
 mod geometry;
 mod graphics;
-mod input;
 mod systems;
 mod types;
 
@@ -13,11 +12,11 @@ use crate::graphics::graphics::Graphics;
 use crate::graphics::rendering::frame::Frame;
 use crate::graphics::rendering::renderers::crossterm_renderer::CrosstermRenderer;
 use crate::graphics::theme::AsciiTheme;
-use crate::input::action::*;
-use crate::input::implementations::crossterm_input_handler::CrosstermInputHandler;
-use crate::input::input_handler::InputHandler;
+use crate::graphics::window::game_window::GameWindow;
+use crate::graphics::window::implementations::crossterm_window::CrosstermGameWindow;
 use crate::systems::combat::Combat;
 use crate::systems::movement::{MoveEvent, MovementSystem};
+use graphics::window::input_action_mapper::*;
 use std::io;
 use std::thread::sleep;
 use std::time::{Duration, Instant};
@@ -33,16 +32,18 @@ fn main() -> io::Result<()> {
     let mh: usize = 22;
 
     // Top-level variables
-    let screen_rect: Rect = Rect::new_dimensions(sw, sh);
+    let window_rect: Rect = Rect::new_dimensions(sw, sh);
     let map_rect: Rect = Rect::new_dimensions(mw, mh);
+
+    let game_window: Box<dyn GameWindow> = Box::new(CrosstermGameWindow::new(window_rect));
 
     // Renderer instance remains the same for the program's entire lifetime
     let mut graphics: Graphics = Graphics::new(
         // Assign implementations
         Box::new(AsciiTheme {}),
-        Box::new(CrosstermRenderer::new(screen_rect)),
+        Box::new(CrosstermRenderer::new(window_rect)),
     );
-    let mut frame = Frame::new(screen_rect);
+    let mut frame = Frame::new(window_rect);
 
     // Start renderer
     graphics.renderer().begin()?;
@@ -67,7 +68,8 @@ fn main() -> io::Result<()> {
             }
 
             // Polls for actions (i.e. input)
-            let actions = CrosstermInputHandler::get_input();
+            let window_events = game_window.poll_events();
+            let actions = input_action_mapper(window_events);
             let has_actions = actions.len() > 0;
 
             // Pattern matches action categories to their respective handlers
