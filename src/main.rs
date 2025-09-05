@@ -14,9 +14,10 @@ use crate::graphics::rendering::frame::Frame;
 use crate::graphics::rendering::renderers::crossterm_renderer::CrosstermRenderer;
 use crate::graphics::theme::AsciiTheme;
 use crate::input::action::*;
+use crate::input::implementations::crossterm_input_handler::CrosstermInputHandler;
+use crate::input::input_handler::InputHandler;
 use crate::systems::combat::Combat;
 use crate::systems::movement::{MoveEvent, MovementSystem};
-use input::input_handler::get_input;
 use std::io;
 use std::thread::sleep;
 use std::time::{Duration, Instant};
@@ -66,7 +67,7 @@ fn main() -> io::Result<()> {
             }
 
             // Polls for actions (i.e. input)
-            let actions = get_input();
+            let actions = CrosstermInputHandler::get_input();
             let has_actions = actions.len() > 0;
 
             // Pattern matches action categories to their respective handlers

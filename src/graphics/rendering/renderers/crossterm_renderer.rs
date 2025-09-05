@@ -74,6 +74,7 @@ impl Renderer for CrosstermRenderer {
     }
 }
 
+// Color decoupling so I can switch the renderers later
 pub fn to_crossterm(color: Color) -> CtColor {
     match color {
         Color::Black => CtColor::Black,
