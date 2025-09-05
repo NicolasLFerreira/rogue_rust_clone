@@ -1,4 +1,4 @@
-use crate::game::Game;
+use crate::game_state::GameState;
 use crate::geometry::point::Point;
 use crate::graphics::color::Color;
 use crate::graphics::rendering::frame::Frame;
@@ -20,7 +20,7 @@ impl Graphics {
         &mut *self.renderer
     }
 
-    pub fn compose_frame(&self, frame: &mut Frame, game_state: &Game) {
+    pub fn compose_frame(&self, frame: &mut Frame, game_state: &GameState) {
         // Map
         for (point, tile) in game_state.tile_map.iter_tiles() {
             frame.put(point, self.theme.tile_theme(tile))

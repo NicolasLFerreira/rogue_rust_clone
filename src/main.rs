@@ -1,12 +1,12 @@
 mod entities;
-mod game;
+mod game_state;
 mod game_map;
 mod geometry;
 mod graphics;
 mod systems;
 mod types;
 
-use crate::game::Game;
+use crate::game_state::GameState;
 use crate::geometry::rect::Rect;
 use crate::graphics::graphics::Graphics;
 use crate::graphics::rendering::frame::Frame;
@@ -53,7 +53,7 @@ fn main() -> io::Result<()> {
         let mut needs_redraw = true;
 
         // Game instance is reset in-between games.
-        let mut game = Game::new(map_rect);
+        let mut game = GameState::new(map_rect);
 
         // Main loop. Break this and the game ends
         'game: loop {

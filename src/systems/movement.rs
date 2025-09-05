@@ -1,5 +1,5 @@
 use crate::entities::entity_manager::EntityManager;
-use crate::game::Game;
+use crate::game_state::GameState;
 use crate::game_map::tile_map::TileMap;
 use crate::geometry::direction::Direction;
 use crate::geometry::point::Point;
@@ -14,7 +14,7 @@ pub enum MoveEvent {
 pub struct MovementSystem;
 
 impl MovementSystem {
-    pub fn try_move(game: &mut Game, mover_id: Id, direction: Direction) -> MoveEvent {
+    pub fn try_move(game: &mut GameState, mover_id: Id, direction: Direction) -> MoveEvent {
         let new_point = match game.entity_manager.get_entity(mover_id) {
             Some(entity) => match entity.point.offset(direction.to_delta()) {
                 Some(p) => p,

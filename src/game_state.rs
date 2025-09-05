@@ -7,12 +7,12 @@ use crate::geometry::delta::Delta;
 use crate::geometry::rect::Rect;
 use crate::systems::movement::MovementSystem;
 
-pub struct Game {
+pub struct GameState {
     pub tile_map: TileMap,
     pub entity_manager: EntityManager,
 }
 
-impl Game {
+impl GameState {
     pub fn new(rect: Rect) -> Self {
         // Map
         let mut tile_map = TileMap::new(rect);
