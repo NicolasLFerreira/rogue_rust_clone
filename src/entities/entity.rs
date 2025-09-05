@@ -1,11 +1,12 @@
 use crate::geometry::point::Point;
+use crate::types::Id;
 
 pub enum EntityKind {
     Player,
     Enemy,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Stats {
     pub max_hp: i32,
     pub cur_hp: i32,
@@ -23,7 +24,7 @@ impl Stats {
 }
 
 pub struct Entity {
-    id: usize,
+    id: Id,
     pub point: Point,
     pub kind: EntityKind,
     pub stats: Stats,
@@ -31,9 +32,9 @@ pub struct Entity {
 
 // Constructor
 impl Entity {
-    pub fn new(id: usize, point: Point, kind: EntityKind) -> Self {
+    pub fn new(point: Point, kind: EntityKind) -> Self {
         Self {
-            id,
+            id: 0,
             point,
             kind,
             stats: Stats {
@@ -51,5 +52,9 @@ impl Entity {
     // Behind a getter since changing the id is a big no-no
     pub fn id(&self) -> usize {
         self.id
+    }
+
+    pub(crate) fn assign_id(&mut self, id: Id) {
+        self.id = id;
     }
 }

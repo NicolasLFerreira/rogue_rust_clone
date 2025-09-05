@@ -55,7 +55,7 @@ impl Theme for AsciiTheme {
                 EntityKind::Enemy => Color::DarkRed,
             },
             background: match entity.kind {
-                EntityKind::Player => Color::DarkBlue,
+                EntityKind::Player => Color::Black,
                 EntityKind::Enemy => Color::Black,
             },
         }

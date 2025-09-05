@@ -10,22 +10,33 @@ pub struct EntityManager {
 
 // Constructor
 impl EntityManager {
-    pub fn new(player: Entity) -> Self {
-        let mut hashmap: HashMap<Id, Entity> = HashMap::new();
-        hashmap.insert(0, player);
-        Self {
-            entities: hashmap,
+    pub fn new(mut player: Entity) -> Self {
+        let mut _self = Self {
+            entities: HashMap::new(),
             player_id: 0,
-            entity_id_counter: 1,
-        }
+            entity_id_counter: 0,
+        };
+
+        let player_id = _self.allocate_id();
+        player.assign_id(player_id);
+        _self.entities.insert(player_id, player);
+
+        _self
     }
 }
 
 // Queries
 impl EntityManager {
-    pub fn spawn(&mut self, entity: Entity) {
-        self.entities.insert(self.entity_id_counter, entity);
+    pub fn allocate_id(&mut self) -> Id {
+        let current = self.entity_id_counter;
         self.entity_id_counter += 1;
+        current
+    }
+
+    pub fn spawn(&mut self, mut entity: Entity) {
+        let entity_id = self.allocate_id();
+        entity.assign_id(entity_id);
+        self.entities.insert(entity_id, entity);
     }
 
     pub fn despawn(&mut self, id: Id) {
@@ -34,6 +45,10 @@ impl EntityManager {
 
     pub fn player_id(&self) -> Id {
         self.player_id
+    }
+
+    pub fn player(&self) -> &Entity {
+        self.entities.get(&self.player_id).unwrap()
     }
 
     pub fn get_entity(&self, id: Id) -> Option<&Entity> {

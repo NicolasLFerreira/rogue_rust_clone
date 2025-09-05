@@ -10,7 +10,7 @@ impl Combat {
             return;
         }
 
-        // Immutable borrow of the offender stats. Has to be cloned otherwise borrow-checker will complain
+        // Immutable borrow of the offender stats otherwise borrow-checker will act up
         let offender_stats = if let Some(entity) = game.entity_manager.get_entity(offender) {
             entity.stats.clone()
         } else {

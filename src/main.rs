@@ -25,28 +25,33 @@ const FPS: u64 = 30;
 const FRAME_DURATION: Duration = Duration::from_millis(1000 / FPS);
 
 fn main() -> io::Result<()> {
-    let sw: usize = 156;
-    let sh: usize = 42;
+    let sw: usize = 80; // 156
+    let sh: usize = 25; // 42
+
+    let mw: usize = 80;
+    let mh: usize = 22;
 
     // Top-level variables
     let screen_rect: Rect = Rect::new_dimensions(sw, sh);
-    let map_rect: Rect = Rect::new_dimensions(sw, sh - 3);
+    let map_rect: Rect = Rect::new_dimensions(mw, mh);
 
     // Renderer instance remains the same for the program's entire lifetime
     let mut graphics: Graphics = Graphics::new(
+        // Assign implementations
         Box::new(AsciiTheme {}),
         Box::new(CrosstermRenderer::new(screen_rect)),
     );
     let mut frame = Frame::new(screen_rect);
 
+    // Start renderer
+    graphics.renderer().begin()?;
+
     'master: loop {
+        frame.clear();
+        let mut needs_redraw = true;
+
         // Game instance is reset in-between games.
         let mut game = Game::new(map_rect);
-
-        // Rendering setup
-        graphics.renderer().begin()?;
-        frame.clear();
-        let mut needs_redraw = true; // turn-based: redraw only when state changes
 
         // Main loop. Break this and the game ends
         'game: loop {
@@ -62,10 +67,7 @@ fn main() -> io::Result<()> {
 
             // Polls for actions (i.e. input)
             let actions = get_input();
-            if actions.len() > 0 {
-                // If an action is performed, redraw the screen
-                needs_redraw = true;
-            };
+            let has_actions = actions.len() > 0;
 
             // Pattern matches action categories to their respective handlers
             for action in actions {
@@ -86,6 +88,13 @@ fn main() -> io::Result<()> {
                     },
                 }
             }
+
+            // Set redraw and move entities after player actions have been calculated
+            if has_actions {
+                // If an action is performed, redraw the screen
+                needs_redraw = true;
+                game.move_entities();
+            };
 
             // Frame limiter
             let elapsed = frame_start.elapsed();
