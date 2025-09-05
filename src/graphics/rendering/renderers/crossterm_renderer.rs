@@ -3,7 +3,7 @@ use crate::graphics::rendering::cell::Cell;
 use crate::graphics::rendering::frame::Frame;
 use crate::graphics::rendering::renderer::Renderer;
 use crossterm::cursor::{Hide, MoveTo, Show};
-use crossterm::style::{Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor};
+use crossterm::style::{Print, ResetColor, SetBackgroundColor, SetForegroundColor};
 use crossterm::terminal::{Clear, ClearType, disable_raw_mode, enable_raw_mode};
 use crossterm::{execute, queue};
 use std::io::{Stdout, Write, stdout};
@@ -54,7 +54,7 @@ impl Renderer for CrosstermRenderer {
 
     fn begin(&mut self) -> std::io::Result<()> {
         self.prev.fill(Cell::default());
-        self.clear()?; 
+        self.clear()?;
         enable_raw_mode()?;
         execute!(self.out, Hide, Clear(ClearType::All))
     }
