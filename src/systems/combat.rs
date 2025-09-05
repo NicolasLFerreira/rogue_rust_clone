@@ -1,11 +1,11 @@
 use crate::entities::entity::Stats;
-use crate::game_state::GameState;
+use crate::state::State;
 use crate::types::Id;
 
 pub struct Combat;
 
 impl Combat {
-    pub fn initiate(game: &mut GameState, offender: Id, defender: Id) {
+    pub fn initiate(game: &mut State, offender: Id, defender: Id) {
         if offender == defender {
             return;
         }

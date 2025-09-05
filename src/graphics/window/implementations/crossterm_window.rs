@@ -6,18 +6,18 @@ use std::time::Duration;
 // Empty implementation. Crossterm automatically utilises stdout which does not warrant manual window management.
 // However, input is still abstracted behind the window, so here it is.
 pub struct CrosstermGameWindow {
-    rect: Rect,
+    window_size: Rect,
 }
 
 impl CrosstermGameWindow {
-    pub fn new(rect: Rect) -> Self {
-        Self { rect }
+    pub fn new(window_size: Rect) -> Self {
+        Self { window_size }
     }
 }
 
 impl GameWindow for CrosstermGameWindow {
-    fn size(&self) -> (usize, usize) {
-        (self.rect.width, self.rect.height)
+    fn size(&self) -> Rect {
+        self.window_size
     }
 
     fn poll_events(&self) -> Vec<WindowEvent> {

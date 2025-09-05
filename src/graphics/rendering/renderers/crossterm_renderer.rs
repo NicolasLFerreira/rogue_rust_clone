@@ -11,17 +11,15 @@ use crossterm::{execute, queue};
 use std::io::{Stdout, Write, stdout};
 
 pub struct CrosstermRenderer {
-    rect: Rect,
     out: Stdout,
     prev: Frame,
 }
 
 impl CrosstermRenderer {
-    pub fn new(rect: Rect) -> Self {
+    pub fn new(frame_size: Rect) -> Self {
         Self {
-            rect,
             out: stdout(),
-            prev: Frame::new(rect),
+            prev: Frame::new(frame_size),
         }
     }
 }

@@ -9,10 +9,10 @@ pub struct Frame {
 }
 
 impl Frame {
-    pub fn new(rect: Rect) -> Self {
+    pub fn new(frame_dimension: Rect) -> Self {
         Self {
-            rect,
-            cells: vec![Cell::default(); rect.area()],
+            rect: frame_dimension,
+            cells: vec![Cell::default(); frame_dimension.area()],
         }
     }
 

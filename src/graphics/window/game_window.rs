@@ -1,5 +1,7 @@
+use crate::geometry::rect::Rect;
+
 pub trait GameWindow {
-    fn size(&self) -> (usize, usize);
+    fn size(&self) -> Rect;
     fn poll_events(&self) -> Vec<WindowEvent>;
     fn is_open(&self) -> bool;
 }
