@@ -1,4 +1,4 @@
-use crossterm::style::Color;
+use crate::graphics::color::Color;
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 pub struct Cell {

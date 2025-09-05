@@ -1,7 +1,7 @@
 use crate::geometry::point::Point;
 use crate::geometry::rect::Rect;
+use crate::graphics::color::Color;
 use crate::graphics::rendering::cell::Cell;
-use crossterm::style::Color;
 
 pub struct Frame {
     pub rect: Rect,

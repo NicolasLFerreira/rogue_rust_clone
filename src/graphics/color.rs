@@ -1,0 +1,20 @@
+#[derive(Copy, Clone, PartialEq, Eq, Hash)]
+pub enum Color {
+    Black,
+    White,
+    Grey,
+    DarkGrey,
+    Red,
+    DarkRed,
+    Green,
+    DarkGreen,
+    Blue,
+    DarkBlue,
+    Yellow,
+    DarkYellow,
+    Magenta,
+    DarkMagenta,
+    Cyan,
+    DarkCyan,
+    Rgb(u8, u8, u8),
+}
