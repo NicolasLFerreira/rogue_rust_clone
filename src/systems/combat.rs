@@ -5,7 +5,7 @@ use crate::types::Id;
 pub struct Combat;
 
 impl Combat {
-    pub fn initiate(game: &mut State, offender: Id, defender: Id) {
+    pub fn fight(game: &mut State, offender: Id, defender: Id) {
         if offender == defender {
             return;
         }
@@ -30,7 +30,7 @@ impl Combat {
         }
     }
 
-    pub fn attack(offender: &Stats, defender: &mut Stats) -> bool {
+    fn attack(offender: &Stats, defender: &mut Stats) -> bool {
         defender.cur_hp -= offender.atk;
         defender.cur_hp <= 0
     }

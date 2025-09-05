@@ -69,7 +69,7 @@ impl Engine {
                             match MovementSystem::try_move(&mut self.state, player_id, move_action)
                             {
                                 MoveEvent::Occupied(mover_id, occupant_id) => {
-                                    Combat::initiate(&mut self.state, mover_id, occupant_id)
+                                    Combat::fight(&mut self.state, mover_id, occupant_id)
                                 }
                                 _ => {}
                             }
