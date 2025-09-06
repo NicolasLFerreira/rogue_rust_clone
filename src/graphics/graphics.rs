@@ -1,5 +1,4 @@
 use crate::geometry::point::Point;
-use crate::geometry::rect::Rect;
 use crate::graphics::color::Color;
 use crate::graphics::rendering::frame::Frame;
 use crate::graphics::rendering::renderer::Renderer;

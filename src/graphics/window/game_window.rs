@@ -2,7 +2,7 @@ use crate::geometry::rect::Rect;
 
 pub trait GameWindow {
     fn size(&self) -> Rect;
-    fn poll_events(&self) -> Vec<WindowEvent>;
+    fn poll_events(&mut self) -> Vec<WindowEvent>;
     fn is_open(&self) -> bool;
 }
 
@@ -21,9 +21,16 @@ pub enum KeyCode {
     Down,
     Left,
     Right,
+    UpLeft,
+    UpRight,
+    DownLeft,
+    DownRight,
 
+    Space,
     Escape,
     BackSpace,
     Enter,
     Char(char),
+
+    Unknown,
 }

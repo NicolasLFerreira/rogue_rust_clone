@@ -36,7 +36,7 @@ impl<W: GameWindow> Engine<W> {
         self.graphics.renderer().begin()?;
         let mut frame = Frame::new(self.window.size());
 
-        while self.window.is_open() {
+        loop  {
             // Duration of frame for FPS limitation
             let frame_start = Instant::now();
 

@@ -20,7 +20,7 @@ impl GameWindow for CrosstermGameWindow {
         self.window_size
     }
 
-    fn poll_events(&self) -> Vec<WindowEvent> {
+    fn poll_events(&mut self) -> Vec<WindowEvent> {
         let mut events = Vec::new();
         while poll(Duration::from_millis(0)).unwrap_or(false) {
             if let Ok(Event::Key(event)) = read() {
