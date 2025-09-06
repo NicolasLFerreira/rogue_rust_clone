@@ -34,14 +34,10 @@ impl<W: GameWindow> Engine<W> {
 
     pub fn run(&mut self) -> std::io::Result<()> {
         self.graphics.renderer().begin()?;
-        let window_size = self.window.size();
-        let mut frame = Frame::new(window_size);
-
-        // Game instance is reset in-between games.
-        self.state = State::new(self.window.size().resize(0, -3));
+        let mut frame = Frame::new(self.window.size());
 
         while self.window.is_open() {
-            // Keeps track of frame duration for FPS limiting
+            // Duration of frame for FPS limitation
             let frame_start = Instant::now();
 
             // Input
@@ -84,9 +80,14 @@ impl<W: GameWindow> Engine<W> {
             }
             Action::Meta(meta_action) => match meta_action {
                 MetaAction::Quit => std::process::exit(0),
-                MetaAction::Restart => self.state = State::new(self.window.size().resize(0, -3)),
+                MetaAction::Restart => self.reset_game_state(),
                 MetaAction::Wait => {}
             },
         }
+    }
+
+    // Temporary
+    fn reset_game_state(&mut self) {
+        self.state = State::new(self.window.size().resize(0, -3));
     }
 }
