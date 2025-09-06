@@ -8,11 +8,11 @@ pub trait GameWindow {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum WindowEvent {
-    CloseRequested,
-    Resized(u32, u32),
-
     KeyPressed(KeyCode),
     KeyReleased(KeyCode),
+    Resized(u32, u32),
+    CloseRequested,
+    Redraw,
 }
 
 #[derive(Debug, Clone, PartialEq)]

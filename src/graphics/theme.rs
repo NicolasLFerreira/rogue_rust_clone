@@ -9,7 +9,7 @@ pub trait Theme {
 }
 
 // Current ASCII theme for the crossterm_renderer
-pub struct AsciiTheme {}
+pub struct AsciiTheme;
 
 impl Theme for AsciiTheme {
     fn tile_theme(&self, tile: Tile) -> Cell {

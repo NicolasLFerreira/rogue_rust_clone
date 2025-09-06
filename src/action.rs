@@ -1,24 +1,32 @@
 use crate::geometry::direction::Direction;
-use crate::graphics::window::input_action_mapper::Action::Meta;
 use crate::graphics::window::game_window::{KeyCode, WindowEvent};
 
-pub fn input_action_mapper(events: Vec<WindowEvent>) -> Vec<Action> {
-    let mut actions = vec![];
-    for event in events {
-        if let Some(action) = map_key_to_action(event) {
-            actions.push(action);
-        }
-    }
-    actions
+pub enum Action {
+    Meta(MetaAction),
+    Move(Direction),
 }
 
-fn map_key_to_action(event: WindowEvent) -> Option<Action> {
+pub enum MetaAction {
+    Quit,
+    Restart,
+    Wait,
+}
+
+pub fn input_action_mapper(event: WindowEvent) -> Action {
+    if let Some(action) = map_key_to_action(event) {
+        action
+    } else {
+        Action::Meta(MetaAction::Wait)
+    }
+}
+
+pub fn map_key_to_action(event: WindowEvent) -> Option<Action> {
     match event {
         WindowEvent::KeyPressed(key) => match key {
             // Meta
-            KeyCode::Char('q') => Some(Meta(MetaAction::Quit)),
-            KeyCode::Char('r') => Some(Meta(MetaAction::Restart)),
-            KeyCode::Char(' ') => Some(Meta(MetaAction::Wait)),
+            KeyCode::Char('q') => Some(Action::Meta(MetaAction::Quit)),
+            KeyCode::Char('r') => Some(Action::Meta(MetaAction::Restart)),
+            KeyCode::Char(' ') => Some(Action::Meta(MetaAction::Wait)),
 
             // Move
             KeyCode::Up | KeyCode::Char('8') => Some(Action::Move(Direction::North)),
@@ -35,15 +43,4 @@ fn map_key_to_action(event: WindowEvent) -> Option<Action> {
         },
         _ => None,
     }
-}
-
-pub enum Action {
-    Meta(MetaAction),
-    Move(Direction),
-}
-
-pub enum MetaAction {
-    Quit,
-    Restart,
-    Wait,
 }

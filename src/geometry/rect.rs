@@ -1,7 +1,7 @@
 use crate::geometry::delta::Delta;
 use crate::geometry::point::Point;
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(Default, Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Rect {
     pub x: usize,
     pub y: usize,
