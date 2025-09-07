@@ -95,6 +95,7 @@ impl Point {
 impl Add<Delta> for Point {
     type Output = Point;
 
+    #[inline]
     fn add(self, rhs: Delta) -> Self::Output {
         Point {
             x: (self.x as i32 + rhs.dx).max(0) as usize,
@@ -106,6 +107,7 @@ impl Add<Delta> for Point {
 impl Add<(usize, usize)> for Point {
     type Output = Point;
 
+    #[inline]
     fn add(self, rhs: (usize, usize)) -> Self::Output {
         Point {
             x: self.x + rhs.0,
@@ -117,6 +119,7 @@ impl Add<(usize, usize)> for Point {
 impl Sub for Point {
     type Output = Delta;
 
+    #[inline]
     fn sub(self, rhs: Self) -> Self::Output {
         Delta {
             dx: (self.x as i32) - (rhs.x as i32),

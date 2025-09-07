@@ -71,7 +71,12 @@ impl<W: GameWindow> Engine<W> {
         match action {
             Action::Move(move_action) => {
                 let player_id = self.state.entity_manager.player_id();
-                match MovementSystem::try_move(&mut self.state, player_id, move_action) {
+                match MovementSystem::try_move_direction(
+                    &mut self.state.entity_manager,
+                    &self.state.tile_map,
+                    player_id,
+                    move_action,
+                ) {
                     MoveEvent::Occupied(mover_id, occupant_id) => {
                         Combat::fight(&mut self.state, mover_id, occupant_id)
                     }

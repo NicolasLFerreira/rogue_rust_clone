@@ -34,6 +34,7 @@ impl State {
 
     pub fn move_entities(&mut self) {
         let player_id = self.entity_manager.player_id();
+        let player_pos = self.entity_manager.player().point;
         let entity_ids: Vec<_> = self
             .entity_manager
             .iter()
@@ -42,11 +43,7 @@ impl State {
             .collect();
 
         for id in entity_ids {
-            MovementSystem::try_move(
-                self,
-                id,
-                Delta::new(rand::random_range(-1..=1), rand::random_range(-1..=1)).to_direction(),
-            );
+            MovementSystem::try_move_npc(&mut self.entity_manager, &self.tile_map, id, player_pos);
         }
     }
 }
