@@ -13,7 +13,7 @@ use crate::geometry::rect::Rect;
 use crate::graphics::graphics::Graphics;
 use crate::graphics::rendering::renderers::crossterm_renderer::CrosstermRenderer;
 use crate::graphics::theme::AsciiTheme;
-use crate::graphics::window::implementations::crossterm_window::CrosstermGameWindow;
+use graphics::window::crossterm_window::CrosstermGameWindow;
 use crate::state::State;
 
 const SCREEN_WIDTH: usize = 80;
