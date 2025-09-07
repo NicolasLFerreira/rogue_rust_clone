@@ -1,9 +1,9 @@
+use crate::game::state::State;
 use crate::geometry::point::Point;
 use crate::graphics::color::Color;
 use crate::graphics::rendering::frame::Frame;
 use crate::graphics::rendering::renderer::Renderer;
 use crate::graphics::theme::Theme;
-use crate::state::State;
 
 // The master object for holding graphics and rendering related code
 pub struct Graphics {

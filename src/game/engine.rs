@@ -1,8 +1,8 @@
-use crate::action::{Action, MetaAction, input_action_mapper};
+use crate::game::action::{Action, MetaAction, input_action_mapper};
+use crate::game::state::State;
 use crate::graphics::graphics::Graphics;
 use crate::graphics::rendering::frame::Frame;
 use crate::graphics::window::game_window::{GameWindow, WindowEvent};
-use crate::state::State;
 use crate::systems::combat::Combat;
 use crate::systems::movement::{MoveEvent, MovementSystem};
 use std::thread::sleep;
@@ -36,7 +36,7 @@ impl<W: GameWindow> Engine<W> {
         self.graphics.renderer().begin()?;
         let mut frame = Frame::new(self.window.size());
 
-        loop  {
+        loop {
             // Duration of frame for FPS limitation
             let frame_start = Instant::now();
 

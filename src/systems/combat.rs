@@ -1,5 +1,5 @@
 use crate::entities::stats::Stats;
-use crate::state::State;
+use crate::game::state::State;
 use crate::types::Id;
 
 pub struct Combat;

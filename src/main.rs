@@ -1,20 +1,18 @@
-mod action;
-mod engine;
 mod entities;
+mod game;
 mod game_map;
 mod geometry;
 mod graphics;
-mod state;
 mod systems;
 mod types;
 
-use crate::engine::Engine;
+use crate::game::engine::Engine;
+use crate::game::state::State;
 use crate::geometry::rect::Rect;
 use crate::graphics::graphics::Graphics;
-use crate::graphics::rendering::renderers::crossterm_renderer::CrosstermRenderer;
 use crate::graphics::theme::AsciiTheme;
+use graphics::rendering::crossterm_renderer::CrosstermRenderer;
 use graphics::window::crossterm_window::CrosstermGameWindow;
-use crate::state::State;
 
 const SCREEN_WIDTH: usize = 80;
 const SCREEN_HEIGHT: usize = 25;

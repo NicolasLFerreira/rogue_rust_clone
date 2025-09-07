@@ -1,5 +1,5 @@
 use crate::entities::entity_manager::EntityManager;
-use crate::state::State;
+use crate::game::state::State;
 use crate::game_map::tile_map::TileMap;
 use crate::geometry::direction::Direction;
 use crate::geometry::point::Point;
