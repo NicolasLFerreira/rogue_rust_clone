@@ -1,4 +1,4 @@
-use crate::entities::entity::Stats;
+use crate::entities::stats::Stats;
 use crate::state::State;
 use crate::types::Id;
 
