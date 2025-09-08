@@ -3,9 +3,9 @@ use crate::entities::entity_manager::EntityManager;
 use crate::game_map::generation::generators::dungeon_map_generator::DungeonMapGenerator;
 use crate::game_map::generation::map_generator::MapGenerator;
 use crate::game_map::tile_map::*;
-use crate::geometry::delta::Delta;
 use crate::geometry::rect::Rect;
-use crate::systems::movement::MovementSystem;
+use crate::systems::combat::Combat;
+use crate::systems::movement::{MoveEvent, MovementSystem};
 
 pub struct State {
     pub tile_map: TileMap,
@@ -32,7 +32,7 @@ impl State {
         }
     }
 
-    pub fn move_entities(&mut self) {
+    pub fn move_entities(&mut self) -> Vec<MoveEvent> {
         let player_id = self.entity_manager.player_id();
         let player_pos = self.entity_manager.player().point;
         let entity_ids: Vec<_> = self
@@ -42,8 +42,16 @@ impl State {
             .filter(|&id| id != player_id)
             .collect();
 
+        let mut results: Vec<MoveEvent> = vec![];
         for id in entity_ids {
-            MovementSystem::try_move_npc(&mut self.entity_manager, &self.tile_map, id, player_pos);
+            results.push(MovementSystem::try_move_npc(
+                &mut self.entity_manager,
+                &self.tile_map,
+                id,
+                player_pos,
+            ));
         }
+
+        results
     }
 }

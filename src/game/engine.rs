@@ -63,7 +63,15 @@ impl<W: GameWindow> Engine<W> {
         for event in events {
             let action = input_action_mapper(event);
             self.handle_action(action);
-            self.state.move_entities();
+            let results = self.state.move_entities();
+            for result in results {
+                match result {
+                    MoveEvent::Occupied(mover, occupant) => {
+                        Combat::fight(&mut self.state.entity_manager, mover, occupant);
+                    }
+                    _ => {}
+                }
+            }
         }
     }
 
@@ -78,7 +86,7 @@ impl<W: GameWindow> Engine<W> {
                     move_action,
                 ) {
                     MoveEvent::Occupied(mover_id, occupant_id) => {
-                        Combat::fight(&mut self.state, mover_id, occupant_id)
+                        Combat::fight(&mut self.state.entity_manager, mover_id, occupant_id)
                     }
                     _ => {}
                 }
