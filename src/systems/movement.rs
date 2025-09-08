@@ -1,14 +1,11 @@
 use crate::entities::entity::Entity;
 use crate::entities::entity_manager::EntityManager;
-use crate::game::state::State;
 use crate::game_map::tile::Tile;
 use crate::game_map::tile_map::TileMap;
-use crate::geometry::delta::Delta;
 use crate::geometry::direction::Direction;
 use crate::geometry::point::Point;
 use crate::types::Id;
 use std::collections::{HashMap, VecDeque};
-use std::ops::Index;
 
 pub enum MoveEvent {
     Pass,
