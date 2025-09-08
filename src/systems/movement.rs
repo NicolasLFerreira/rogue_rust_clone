@@ -3,9 +3,12 @@ use crate::entities::entity_manager::EntityManager;
 use crate::game::state::State;
 use crate::game_map::tile::Tile;
 use crate::game_map::tile_map::TileMap;
+use crate::geometry::delta::Delta;
 use crate::geometry::direction::Direction;
 use crate::geometry::point::Point;
 use crate::types::Id;
+use std::collections::{HashMap, VecDeque};
+use std::ops::Index;
 
 pub enum MoveEvent {
     Pass,
@@ -27,8 +30,8 @@ impl MovementSystem {
             None => return MoveEvent::Invalid,
         };
 
-        // Calculates direction (this part can be replaced with an actual algorithm)
-        let mhd = target - entity.point;
+        // // Calculates direction (this part can be replaced with an actual algorithm)
+        let mhd = Self::bfs_next(tile_map, entity.point, target) - entity.point;
         let dir = mhd.to_direction();
 
         // Tries moving in direction
@@ -74,5 +77,35 @@ impl MovementSystem {
 
     fn is_occupied(entities: &EntityManager, point: Point) -> Option<Id> {
         entities.iter().find(|e| e.point == point).map(|e| e.id())
+    }
+
+    fn bfs_next(tile_map: &TileMap, start: Point, end: Point) -> Point {
+        let mut queue = VecDeque::new();
+        queue.push_back(start);
+
+        let mut came_from: HashMap<Point, Option<Point>> = HashMap::new();
+        came_from.insert(start, None);
+
+        while let Some(current) = queue.pop_front() {
+            if current == end {
+                break;
+            }
+
+            for neighbour in tile_map.walkable_neighbours(current) {
+                if !came_from.contains_key(&neighbour) {
+                    queue.push_back(neighbour);
+                    came_from.insert(neighbour, Some(current));
+                }
+            }
+        }
+
+        let mut path = vec![end];
+        let mut current = end;
+        while let Some(&Some(prev)) = came_from.get(&current) {
+            path.push(prev);
+            current = prev;
+        }
+        path.reverse();
+        path[1]
     }
 }

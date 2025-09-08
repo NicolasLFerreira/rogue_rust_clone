@@ -5,7 +5,7 @@ use crate::geometry::rect::Rect;
 
 pub struct TileMap {
     pub rect: Rect,
-    pub(crate) tile_map: Vec<Tile>,
+    pub(super) tile_map: Vec<Tile>,
 }
 
 // Constructor
@@ -18,9 +18,6 @@ impl TileMap {
     }
 }
 
-// Generation
-impl TileMap {}
-
 // Other
 impl TileMap {
     fn index(&self, point: Point) -> Option<usize> {
@@ -32,7 +29,9 @@ impl TileMap {
     }
 
     pub fn get(&self, point: Point) -> Tile {
-        self.tile_map[self.index(point).unwrap()]
+        self.index(point)
+            .map(|i| self.tile_map[i])
+            .unwrap_or(Tile::empty())
     }
 
     pub fn safe_get(&self, point: Point) -> Option<Tile> {
@@ -51,6 +50,15 @@ impl TileMap {
             }
             None => false,
         }
+    }
+
+    pub fn walkable_neighbours(&self, point: Point) -> Vec<Point> {
+        point
+            .neighbors()
+            .iter()
+            .filter(|p| self.get(**p).is_walkable())
+            .cloned()
+            .collect()
     }
 
     pub fn iter_tiles(&self) -> impl Iterator<Item = (Point, Tile)> {

@@ -29,8 +29,9 @@ impl Point {
             + (self.y as isize - other.y as isize).abs() as usize
     }
 
-    pub fn neighbors(&self) -> [Point; 4] {
+    pub fn neighbors(&self) -> [Point; 8] {
         [
+            // Straight
             Point {
                 x: self.x + 1,
                 y: self.y,
@@ -45,6 +46,23 @@ impl Point {
             },
             Point {
                 x: self.x,
+                y: self.y.saturating_sub(1),
+            },
+            // Diagonal
+            Point {
+                x: self.x + 1,
+                y: self.y.saturating_sub(1),
+            },
+            Point {
+                x: self.x.saturating_sub(1),
+                y: self.y + 1,
+            },
+            Point {
+                x: self.x + 1,
+                y: self.y + 1,
+            },
+            Point {
+                x: self.x.saturating_sub(1),
                 y: self.y.saturating_sub(1),
             },
         ]

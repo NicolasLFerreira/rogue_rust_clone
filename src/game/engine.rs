@@ -12,6 +12,12 @@ use std::time::{Duration, Instant};
 const FPS: u64 = 30;
 const FRAME_DURATION: Duration = Duration::from_millis(1000 / FPS);
 
+enum EngineFlow {
+    Quit,
+    Restart,
+    Continue,
+}
+
 // Master struct. Holds references to all major components
 pub struct Engine<W: GameWindow> {
     graphics: Graphics,
@@ -36,12 +42,16 @@ impl<W: GameWindow> Engine<W> {
         self.graphics.renderer().begin()?;
         let mut frame = Frame::new(self.window.size());
 
-        loop {
+        'master: loop {
             // Duration of frame for FPS limitation
             let frame_start = Instant::now();
 
             // Input
-            self.input();
+            match self.input() {
+                EngineFlow::Quit => break 'master,
+                EngineFlow::Restart => self.reset_game_state(),
+                EngineFlow::Continue => {}
+            }
 
             // Render
             self.graphics.compose_frame(&self.state, &mut frame);
@@ -57,12 +67,12 @@ impl<W: GameWindow> Engine<W> {
         self.graphics.renderer().end()
     }
 
-    fn input(&mut self) {
+    fn input(&mut self) -> EngineFlow {
         self.event_queue.extend(self.window.poll_events());
         let events: Vec<WindowEvent> = self.event_queue.drain(..).map(|x| x).collect();
         for event in events {
             let action = input_action_mapper(event);
-            self.handle_action(action);
+            let flow = self.handle_action(action);
             let results = self.state.move_entities();
             for result in results {
                 match result {
@@ -72,10 +82,13 @@ impl<W: GameWindow> Engine<W> {
                     _ => {}
                 }
             }
+
+            return flow;
         }
+        EngineFlow::Continue
     }
 
-    fn handle_action(&mut self, action: Action) {
+    fn handle_action(&mut self, action: Action) -> EngineFlow {
         match action {
             Action::Move(move_action) => {
                 let player_id = self.state.entity_manager.player_id();
@@ -86,15 +99,16 @@ impl<W: GameWindow> Engine<W> {
                     move_action,
                 ) {
                     MoveEvent::Occupied(mover_id, occupant_id) => {
-                        Combat::fight(&mut self.state.entity_manager, mover_id, occupant_id)
+                        Combat::fight(&mut self.state.entity_manager, mover_id, occupant_id);
+                        EngineFlow::Continue
                     }
-                    _ => {}
+                    _ => EngineFlow::Continue,
                 }
             }
             Action::Meta(meta_action) => match meta_action {
-                MetaAction::Quit => std::process::exit(0),
-                MetaAction::Restart => self.reset_game_state(),
-                MetaAction::Wait => {}
+                MetaAction::Quit => EngineFlow::Quit,
+                MetaAction::Restart => EngineFlow::Restart,
+                MetaAction::Wait => EngineFlow::Continue,
             },
         }
     }
