@@ -34,7 +34,13 @@ impl State {
 
     pub fn move_entities(&mut self) -> Vec<MoveEvent> {
         let player_id = self.entity_manager.player_id();
-        let player_pos = self.entity_manager.player().point;
+
+        let player_pos = if let Some(player) = self.entity_manager.player() {
+            player.point
+        } else {
+            return vec![MoveEvent::Invalid];
+        };
+
         let entity_ids: Vec<_> = self
             .entity_manager
             .iter()
