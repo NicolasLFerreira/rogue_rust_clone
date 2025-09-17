@@ -48,17 +48,19 @@ impl Graphics {
             Color::Black,
         );
 
-        let stats = state.entity_manager.player().stats.clone();
-        let stats_string = &format!(
-            "| hp: {}({}) - atk: {}",
-            stats.cur_hp, stats.max_hp, stats.atk
-        );
+        if let Some(player) = state.entity_manager.player() {
+            let stats = &player.stats;
+            let stats_string = &format!(
+                "| hp: {}({}) - atk: {}",
+                stats.cur_hp, stats.max_hp, stats.atk
+            );
 
-        frame.put_str(
-            Point::new(12, state.tile_map.rect.height),
-            stats_string,
-            Color::Red,
-            Color::Black,
-        )
+            frame.put_str(
+                Point::new(12, state.tile_map.rect.height),
+                stats_string,
+                Color::Red,
+                Color::Black,
+            )
+        }
     }
 }

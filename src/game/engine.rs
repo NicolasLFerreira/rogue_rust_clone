@@ -43,6 +43,10 @@ impl<W: GameWindow> Engine<W> {
         let mut frame = Frame::new(self.window.size());
 
         'master: loop {
+            if let None = self.state.entity_manager.player() {
+                self.reset_game_state();
+            }
+
             // Duration of frame for FPS limitation
             let frame_start = Instant::now();
 

@@ -47,8 +47,8 @@ impl EntityManager {
         self.player_id
     }
 
-    pub fn player(&self) -> &Entity {
-        self.entities.get(&self.player_id).unwrap()
+    pub fn player(&self) -> Option<&Entity> {
+        self.entities.get(&self.player_id)
     }
 
     pub fn get_entity(&self, id: Id) -> Option<&Entity> {
