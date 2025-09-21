@@ -3,8 +3,8 @@ use crate::entities::entity_manager::EntityManager;
 use crate::game_map::generation::generators::dungeon_map_generator::DungeonMapGenerator;
 use crate::game_map::generation::map_generator::MapGenerator;
 use crate::game_map::tile_map::*;
+use crate::geometry::point::Point;
 use crate::geometry::rect::Rect;
-use crate::systems::combat::Combat;
 use crate::systems::movement::{MoveEvent, MovementSystem};
 
 pub struct State {
@@ -14,17 +14,25 @@ pub struct State {
 
 impl State {
     pub fn new(rect: Rect) -> Self {
-        // Map
+        // Map generation
         let mut tile_map = TileMap::new(rect);
-
-        // Generation
         let mut generator: Box<dyn MapGenerator> = Box::new(DungeonMapGenerator::new(rect));
         generator.generate_map(&mut tile_map);
 
         // Entities
         let player = Entity::new(tile_map.rnd_floor_point(), EntityKind::Player);
         let mut entity_manager = EntityManager::new(player);
-        entity_manager.spawn(Entity::new(tile_map.rnd_floor_point(), EntityKind::Enemy));
+
+        for _ in 0..8 {
+            let pos: Point = loop {
+                let pos = tile_map.rnd_floor_point();
+                if entity_manager.iter().all(|e: &Entity| e.point != pos) {
+                    break pos;
+                }
+            };
+            entity_manager
+                .spawn(Entity::new(pos, EntityKind::Enemy));
+        }
 
         Self {
             tile_map,

@@ -103,6 +103,11 @@ impl MovementSystem {
             current = prev;
         }
         path.reverse();
-        path[1]
+        if let Some(next) = path.get(1) {
+            *next
+        } else {
+            // edge case where entities are overlapping
+            start
+        }
     }
 }
