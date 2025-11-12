@@ -23,7 +23,9 @@ impl State {
         let player = Entity::new(tile_map.rnd_floor_point(), EntityKind::Player);
         let mut entity_manager = EntityManager::new(player);
 
-        for _ in 0..8 {
+        // Shitty spawn "system"
+        let spawn_num = 2;
+        for _ in 0..spawn_num {
             let pos: Point = loop {
                 let pos = tile_map.rnd_floor_point();
                 if entity_manager.iter().all(|e: &Entity| e.point != pos) {
